@@ -1,13 +1,13 @@
-name: APIC ProtoHub CI
+name: Node.js CI
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ "main" ]
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,10 +19,10 @@ jobs:
         node-version: 20.x
 
     - name: Install dependencies
-      run: npm install
+      run: npm ci
 
     - name: Run baseline tests
       run: npm test
 
-    - name: Run lint check
+    - name: Run lint
       run: npm run lint
