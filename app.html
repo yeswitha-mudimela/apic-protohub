@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>APIC ProtoHub — Find a machine</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --steel-900:#16191d;
+    --steel-700:#2b3038;
+    --steel-500:#5a626e;
+    --steel-300:#9aa3b0;
+    --steel-100:#e4e7eb;
+    --steel-50:#f4f6f8;
+    --paper:#fbfcfd;
+    --safety:#f5c518;      /* available */
+    --oxide:#c1440e;       /* blocked / maintenance */
+    --verdigris:#1c7c6c;   /* confirmed */
+    --line:#d3d8de;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--paper);
+    color:var(--steel-900);
+    font-family:'Inter',system-ui,sans-serif;
+    font-size:15px;
+    line-height:1.5;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+
+  /* ---- header: reads like a spec plate ---- */
+  header{
+    background:var(--steel-900);
+    color:#fff;
+    border-bottom:3px solid var(--safety);
+  }
+  .hbar{display:flex;align-items:baseline;gap:16px;padding:18px 0}
+  .mark{
+    font-family:'Archivo Narrow',sans-serif;
+    font-weight:700;font-size:22px;letter-spacing:.06em;text-transform:uppercase;
+  }
+  .mark span{color:var(--safety)}
+  .hmeta{
+    font-family:'JetBrains Mono',monospace;font-size:11px;
+    color:var(--steel-300);letter-spacing:.04em;margin-left:auto;
+  }
+
+  /* ---- the signature element: the matcher ---- */
+  .matcher{background:var(--steel-700);color:#fff;padding:28px 0 32px}
+  .matcher h1{
+    font-family:'Archivo Narrow',sans-serif;
+    font-size:30px;font-weight:600;letter-spacing:-.01em;margin-bottom:4px;
+  }
+  .matcher p.sub{color:var(--steel-300);font-size:14px;margin-bottom:22px}
+  .fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;align-items:end}
+  label{
+    display:block;font-family:'JetBrains Mono',monospace;
+    font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--steel-300);margin-bottom:6px;
+  }
+  input,select{
+    width:100%;padding:10px 12px;
+    background:var(--steel-900);color:#fff;
+    border:1px solid var(--steel-500);border-radius:2px;
+    font-family:'JetBrains Mono',monospace;font-size:14px;
+  }
+  input:focus,select:focus{outline:2px solid var(--safety);outline-offset:1px;border-color:var(--safety)}
+  .dims{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:6px;align-items:center}
+  .x{color:var(--steel-500);font-family:'JetBrains Mono',monospace;font-size:13px;padding-bottom:2px}
+  button.go{
+    padding:10px 22px;background:var(--safety);color:var(--steel-900);
+    border:none;border-radius:2px;cursor:pointer;
+    font-family:'Archivo Narrow',sans-serif;font-weight:700;
+    font-size:15px;letter-spacing:.06em;text-transform:uppercase;
+  }
+  button.go:hover{background:#ffd83d}
+
+  /* ---- results ---- */
+  .results{padding:28px 0 60px}
+  .rhead{
+    display:flex;align-items:baseline;gap:10px;margin-bottom:16px;
+    padding-bottom:10px;border-bottom:2px solid var(--steel-900);
+  }
+  .rhead h2{font-family:'Archivo Narrow',sans-serif;font-size:19px;font-weight:600}
+  .rcount{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--steel-500);margin-left:auto}
+
+  /* machine card = equipment tag */
+  .card{
+    display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:center;
+    background:#fff;border:1px solid var(--line);border-left:4px solid var(--safety);
+    padding:14px 18px;margin-bottom:10px;
+  }
+  .card.maint{border-left-color:var(--oxide);opacity:.72}
+  .fit{
+    font-family:'JetBrains Mono',monospace;text-align:center;
+    min-width:52px;
+  }
+  .fit b{display:block;font-size:17px;font-weight:500}
+  .fit span{font-size:9px;color:var(--steel-500);letter-spacing:.08em}
+  .cname{font-family:'Archivo Narrow',sans-serif;font-size:17px;font-weight:600}
+  .cmeta{font-size:12.5px;color:var(--steel-500);margin-top:2px}
+  .creason{
+    font-family:'JetBrains Mono',monospace;font-size:11px;
+    color:var(--steel-500);margin-top:5px;
+  }
+  .tagrow{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+  .tag{
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.05em;
+    padding:2px 6px;border:1px solid var(--line);color:var(--steel-500);
+    text-transform:uppercase;
+  }
+  .tag.stock{border-color:var(--verdigris);color:var(--verdigris)}
+  .tag.low{border-color:var(--oxide);color:var(--oxide)}
+  .right{text-align:right}
+  .rate{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:500}
+  .rate small{font-size:10px;color:var(--steel-500);font-weight:400}
+  .strike{text-decoration:line-through;color:var(--steel-300);font-size:12px}
+  button.book{
+    margin-top:8px;padding:7px 16px;background:var(--steel-900);color:#fff;
+    border:none;border-radius:2px;cursor:pointer;
+    font-family:'Archivo Narrow',sans-serif;font-weight:600;
+    font-size:13px;letter-spacing:.05em;text-transform:uppercase;
+  }
+  button.book:hover{background:var(--verdigris)}
+  button.book:disabled{background:var(--steel-300);cursor:not-allowed}
+
+  .empty{
+    border:1px dashed var(--line);padding:28px;text-align:center;
+    color:var(--steel-500);font-size:14px;
+  }
+  .empty b{display:block;color:var(--steel-900);font-family:'Archivo Narrow',sans-serif;
+    font-size:17px;margin-bottom:4px}
+
+  /* ---- slot picker ---- */
+  .modal{
+    position:fixed;inset:0;background:rgba(22,25,29,.6);
+    display:none;align-items:center;justify-content:center;padding:20px;z-index:50;
+  }
+  .modal.on{display:flex}
+  .sheet{background:#fff;max-width:560px;width:100%;border-top:4px solid var(--safety)}
+  .shead{padding:18px 22px;border-bottom:1px solid var(--line)}
+  .shead h3{font-family:'Archivo Narrow',sans-serif;font-size:19px;font-weight:600}
+  .shead p{font-size:12.5px;color:var(--steel-500);margin-top:2px}
+  .sbody{padding:18px 22px;max-height:60vh;overflow:auto}
+  .day{margin-bottom:16px}
+  .dlabel{
+    font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.08em;
+    color:var(--steel-500);text-transform:uppercase;margin-bottom:7px;
+  }
+  .slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(76px,1fr));gap:6px}
+  .slot{
+    padding:8px 4px;text-align:center;border:1px solid var(--line);
+    background:#fff;cursor:pointer;
+    font-family:'JetBrains Mono',monospace;font-size:12px;
+  }
+  .slot:hover{border-color:var(--steel-900);background:var(--steel-50)}
+  .slot.taken{background:var(--steel-50);color:var(--steel-300);
+    cursor:not-allowed;text-decoration:line-through;border-style:dashed}
+  .slot.sel{background:var(--safety);border-color:var(--safety);font-weight:600}
+  .sfoot{padding:16px 22px;border-top:1px solid var(--line);
+    display:flex;gap:10px;align-items:center}
+  .est{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--steel-500)}
+  .est b{color:var(--steel-900);font-size:15px}
+  .sfoot button{margin-left:auto}
+  button.ghost{
+    background:none;border:1px solid var(--line);color:var(--steel-500);
+    padding:8px 16px;cursor:pointer;font-family:'Archivo Narrow',sans-serif;
+    font-size:13px;text-transform:uppercase;letter-spacing:.05em;
+  }
+  .done{padding:34px 22px;text-align:center}
+  .done .tick{font-size:34px;color:var(--verdigris);margin-bottom:8px}
+  .done h3{font-family:'Archivo Narrow',sans-serif;font-size:21px;margin-bottom:6px}
+  .done p{font-size:13.5px;color:var(--steel-500);margin-bottom:4px}
+  .jobno{font-family:'JetBrains Mono',monospace;font-size:13px;
+    background:var(--steel-50);padding:8px;margin:12px 0;border:1px solid var(--line)}
+  @media (max-width:680px){
+    .card{grid-template-columns:auto 1fr;gap:12px}
+    .right{grid-column:1/-1;text-align:left;display:flex;
+      align-items:center;gap:12px;padding-top:8px;border-top:1px dashed var(--line)}
+    button.book{margin-top:0;margin-left:auto}
+  }
+
+  /* Live Tracker & Stepper */
+  .tracker-section{background:#fff;border-top:2px solid var(--steel-900);padding:32px 0 60px;margin-top:20px}
+  .tcard{
+    background:var(--paper);border:1px solid var(--line);border-left:4px solid var(--steel-300);
+    padding:18px 20px;margin-bottom:16px;border-radius:2px;
+  }
+  .tcard.pending{border-left-color:var(--steel-500)}
+  .tcard.quote-ready{border-left-color:var(--safety);background:#fffdf6}
+  .tcard.in-progress{border-left-color:var(--verdigris);background:#f6fcfa}
+  .tcard.ready{border-left-color:var(--verdigris);background:#eefbf7}
+  .thead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:10px}
+  .ttitle{font-family:'Archivo Narrow',sans-serif;font-size:18px;font-weight:600}
+  .tmeta{font-size:13px;color:var(--steel-500);margin-top:2px}
+  .stepper{display:flex;gap:4px;margin:16px 0 14px;position:relative}
+  .step{
+    flex:1;text-align:center;padding:7px 4px;font-family:'JetBrains Mono',monospace;
+    font-size:10px;text-transform:uppercase;letter-spacing:.05em;border-bottom:3px solid var(--line);
+    color:var(--steel-300);background:rgba(0,0,0,.02);
+  }
+  .step.done{border-bottom-color:var(--verdigris);color:var(--verdigris);font-weight:600}
+  .step.curr{border-bottom-color:var(--safety);color:var(--steel-900);font-weight:700;background:rgba(245,197,24,.15)}
+  .quote-box{
+    background:#fff;border:1px solid var(--line);padding:14px 18px;margin:12px 0;
+    border-radius:2px;border-left:3px solid var(--safety);
+  }
+  .qhead{font-family:'Archivo Narrow',sans-serif;font-size:15px;font-weight:600;margin-bottom:8px}
+  .qgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;font-family:'JetBrains Mono',monospace;font-size:12px}
+  .qtot{font-size:16px;font-weight:700;color:var(--steel-900);margin-top:10px;padding-top:8px;border-top:1px dashed var(--line);display:flex;justify-content:space-between;align-items:baseline}
+  .qbtn{
+    margin-top:10px;padding:8px 18px;background:var(--verdigris);color:#fff;
+    border:none;border-radius:2px;cursor:pointer;font-family:'Archivo Narrow',sans-serif;
+    font-size:13.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;
+  }
+  .qbtn:hover{background:#156054}
+  .hist-log{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--steel-500);margin-top:10px;line-height:1.6}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap hbar">
+    <div class="mark">APIC <span>ProtoHub</span></div>
+    <div style="margin-left:16px;display:flex;gap:10px;align-items:center">
+      <a href="manager.html" style="color:var(--safety);font-family:'JetBrains Mono',monospace;font-size:12px;text-decoration:none;border:1px solid var(--safety);padding:4px 10px;border-radius:2px;font-weight:600">➔ MANAGER CONSOLE</a>
+      <button onclick="scrollToMyJobs()" style="background:transparent;border:1px solid var(--steel-500);color:var(--steel-300);font-family:'JetBrains Mono',monospace;font-size:11px;padding:4px 8px;cursor:pointer">MY TRACKER (<span id="my_jobs_badge">0</span>)</button>
+    </div>
+    <div class="hmeta">ANDHRA PRADESH INNOVATION SOCIETY · 4 CENTRES LIVE · 11 MACHINES</div>
+  </div>
+</header>
+
+<section class="matcher">
+  <div class="wrap">
+    <h1>What are you making?</h1>
+    <p class="sub">Describe the part. We'll show only machines that can actually make it.</p>
+    <div class="fields">
+      <div>
+        <label>Part size (mm)</label>
+        <div class="dims">
+          <input id="x" type="number" value="120" min="1">
+          <span class="x">×</span>
+          <input id="y" type="number" value="80" min="1">
+          <span class="x">×</span>
+          <input id="z" type="number" value="40" min="1">
+        </div>
+      </div>
+      <div>
+        <label>Material</label>
+        <select id="mat">
+          <option value="">Any material</option>
+          <option value="pla" selected>PLA</option>
+          <option value="abs">ABS</option>
+          <option value="petg">PETG</option>
+          <option value="nylon_pa12">Nylon PA12</option>
+          <option value="resin_std">Standard Resin</option>
+          <option value="al_6061">Aluminium 6061</option>
+          <option value="acrylic">Acrylic Sheet</option>
+          <option value="mdf">MDF Board</option>
+          <option value="fr4">FR4 Copper-Clad</option>
+        </select>
+      </div>
+      <div>
+        <label>Precision needed</label>
+        <select id="tol">
+          <option value="">Not fussy</option>
+          <option value="0.3">Rough (±0.3mm)</option>
+          <option value="0.15">Normal (±0.15mm)</option>
+          <option value="0.05">Precise (±0.05mm)</option>
+          <option value="0.02">Very precise (±0.02mm)</option>
+        </select>
+      </div>
+      <div>
+        <label>You are</label>
+        <select id="who">
+          <option value="student" selected>Student</option>
+          <option value="startup">Startup</option>
+          <option value="industry">Industry</option>
+          <option value="individual">Individual</option>
+        </select>
+      </div>
+      <div>
+        <label>Near</label>
+        <select id="loc">
+          <option value="16.9894,82.2475" selected>Kakinada</option>
+          <option value="17.7300,83.3190">Visakhapatnam</option>
+          <option value="16.5061,80.6480">Vijayawada</option>
+          <option value="13.6287,79.4192">Tirupati</option>
+          <option value="14.6815,77.6004">Anantapur</option>
+        </select>
+      </div>
+      <div><button class="go" onclick="run()">Find machines</button></div>
+    </div>
+  </div>
+</section>
+
+<section class="results">
+  <div class="wrap">
+    <div class="rhead">
+      <h2>Machines that can make this</h2>
+      <div class="rcount" id="count"></div>
+    </div>
+    <div id="list"></div>
+  </div>
+</section>
+
+<!-- My Prototyping Requests & Live Tracker -->
+<section class="tracker-section" id="my_jobs_section">
+  <div class="wrap">
+    <div class="rhead" style="border-bottom:2px solid var(--verdigris)">
+      <h2>My Prototyping Requests &amp; Live Tracking</h2>
+      <div class="rcount" id="my_jobs_count">0 JOBS</div>
+    </div>
+    <div id="my_jobs_list"></div>
+  </div>
+</section>
+
+<div class="modal" id="modal">
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<script>
+/* ============================================================
+   Data mirrors the Postgres seed exactly (schema.sql / seed.sql).
+   Matching logic here is a faithful port of match_machines().
+   ============================================================ */
+const CENTRES = {
+  1:{name:'APIC Visakhapatnam',district:'Visakhapatnam',lat:17.73,lng:83.319,open:9,close:17.5,days:[1,2,3,4,5,6],live:true},
+  2:{name:'APIC Vijayawada',district:'NTR',lat:16.5061,lng:80.648,open:9,close:17.5,days:[1,2,3,4,5,6],live:true},
+  3:{name:'APIC Tirupati',district:'Tirupati',lat:13.6287,lng:79.4192,open:9,close:17.5,days:[1,2,3,4,5,6],live:true},
+  4:{name:'APIC Kakinada',district:'Kakinada',lat:16.9894,lng:82.2475,open:9,close:17.5,days:[1,2,3,4,5,6],live:true},
+  5:{name:'APIC Anantapur',district:'Anantapur',lat:14.6815,lng:77.6004,open:9,close:17.5,days:[1,2,3,4,5,6],live:false}
+};
+const PROC = {
+  fdm:'Plastic 3D printing', sla:'Resin 3D printing (fine detail)',
+  sls:'Nylon 3D printing (strong parts)', cnc_mill:'Metal/plastic machining',
+  laser_cut:'Sheet cutting & engraving', pcb:'Circuit board making'
+};
+const MATLABEL = {pla:'PLA',abs:'ABS',petg:'PETG',nylon_pa12:'Nylon PA12',
+  resin_std:'Standard Resin',al_6061:'Aluminium 6061',acrylic:'Acrylic Sheet',
+  mdf:'MDF Board',fr4:'FR4 Copper-Clad'};
+
+const MACHINES = [
+  {id:1,c:1,p:'fdm',make:'Ultimaker',model:'S5',tag:'VZG-3DP-001',status:'available',rate:350,setup:100,min:200,disc:50,
+   cap:{x:330,y:240,z:300,tol:0.2,feat:0.8,finish:'standard'},
+   mats:{pla:{cost:2.5,stock:4000,reorder:500},abs:{cost:3.0,stock:2000,reorder:500},petg:{cost:3.2,stock:1500,reorder:500}}},
+  {id:2,c:1,p:'sla',make:'Formlabs',model:'Form 3L',tag:'VZG-SLA-001',status:'available',rate:600,setup:150,min:400,disc:40,
+   cap:{x:335,y:200,z:300,tol:0.1,feat:0.3,finish:'fine'},
+   mats:{resin_std:{cost:8.0,stock:3000,reorder:500}}},
+  {id:3,c:1,p:'cnc_mill',make:'Haas',model:'Mini Mill',tag:'VZG-CNC-001',status:'available',rate:1200,setup:500,min:1000,disc:30,
+   cap:{x:406,y:305,z:254,tol:0.013,feat:0.2,finish:'mirror'},
+   mats:{al_6061:{cost:1.2,stock:25000,reorder:5000}}},
+  {id:4,c:1,p:'laser_cut',make:'Trotec',model:'Speedy 400',tag:'VZG-LSR-001',status:'maintenance',rate:450,setup:100,min:250,disc:40,
+   cap:{x:1000,y:610,z:305,tol:0.1,feat:0.1,finish:'standard'},
+   mats:{acrylic:{cost:0.9,stock:12000,reorder:2000},mdf:{cost:0.4,stock:20000,reorder:3000}}},
+  {id:5,c:2,p:'fdm',make:'Creality',model:'K1 Max',tag:'VJA-3DP-001',status:'available',rate:250,setup:50,min:150,disc:50,
+   cap:{x:300,y:300,z:300,tol:0.2,feat:0.8,finish:'standard'},
+   mats:{pla:{cost:2.2,stock:3000,reorder:500},petg:{cost:3.0,stock:800,reorder:500}}},
+  {id:6,c:2,p:'fdm',make:'Prusa',model:'MK4',tag:'VJA-3DP-002',status:'available',rate:200,setup:50,min:150,disc:50,
+   cap:{x:250,y:210,z:220,tol:0.15,feat:0.4,finish:'fine'},
+   mats:{pla:{cost:2.2,stock:250,reorder:500}}},
+  {id:7,c:2,p:'pcb',make:'LPKF',model:'ProtoMat S104',tag:'VJA-PCB-001',status:'available',rate:800,setup:200,min:500,disc:40,
+   cap:{x:229,y:305,z:100,tol:0.05,feat:0.15,finish:'fine'},
+   mats:{fr4:{cost:4.5,stock:2200,reorder:500}}},
+  {id:8,c:3,p:'sls',make:'EOS',model:'P 396',tag:'TPT-SLS-001',status:'available',rate:2500,setup:800,min:2000,disc:25,
+   cap:{x:340,y:340,z:600,tol:0.15,feat:0.5,finish:'standard'},
+   mats:{nylon_pa12:{cost:6.5,stock:15000,reorder:3000}}},
+  {id:9,c:3,p:'fdm',make:'Ultimaker',model:'S3',tag:'TPT-3DP-001',status:'available',rate:300,setup:100,min:200,disc:50,
+   cap:{x:230,y:190,z:200,tol:0.2,feat:0.8,finish:'standard'},
+   mats:{pla:{cost:2.5,stock:1800,reorder:500}}},
+  {id:10,c:4,p:'fdm',make:'Creality',model:'Ender-3 V3',tag:'KKD-3DP-001',status:'available',rate:150,setup:50,min:100,disc:50,
+   cap:{x:220,y:220,z:250,tol:0.3,feat:1.0,finish:'rough'},
+   mats:{pla:{cost:2.0,stock:600,reorder:400}}},
+  {id:11,c:4,p:'laser_cut',make:'GCC',model:'LaserPro C180',tag:'KKD-LSR-001',status:'available',rate:350,setup:100,min:200,disc:40,
+   cap:{x:300,y:200,z:50,tol:0.1,feat:0.1,finish:'standard'},
+   mats:{acrylic:{cost:0.9,stock:5000,reorder:1000},mdf:{cost:0.4,stock:8000,reorder:2000}}},
+  {id:12,c:5,p:'fdm',make:'Bambu Lab',model:'X1 Carbon',tag:'ATP-3DP-001',status:'available',rate:300,setup:100,min:200,disc:50,
+   cap:{x:256,y:256,z:256,tol:0.15,feat:0.4,finish:'fine'},
+   mats:{pla:{cost:2.2,stock:2000,reorder:500}}}
+];
+
+// Shared cross-tab state management
+const STORAGE_KEY = 'APIC_PROTOHUB_STATE_V1';
+
+function getFutureDay(n) {
+  const d = new Date();
+  d.setDate(d.getDate() + n);
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function getDayKey(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function getDefaultState() {
+  return {
+    jobs: [
+      {
+        id: 1, title: 'Drone arm bracket', status: 'ready', machine: 'Ultimaker S5', centreId: 1,
+        innovator: 'Ravi Teja', affiliation: 'student', phone: '+919000000001',
+        material: 'pla', qty: 4, quote: 575.00,
+        quoteDetails: { min: 90, grams: 85, machcost: 525, matcost: 212.5, setup: 100, disc: 262.5, total: 575 },
+        slot: { day: getFutureDay(1), from: 10, to: 12 },
+        history: [
+          { status: 'quote_pending', time: '3 days ago', note: 'Job submitted by innovator' },
+          { status: 'quote_sent', time: '2 days ago', note: 'Quote v1 issued: ₹575.00' },
+          { status: 'quote_accepted', time: '2 days ago', note: 'Innovator accepted quote' },
+          { status: 'queued', time: '1 day ago', note: 'Scheduled for production' },
+          { status: 'setup', time: '6 hours ago', note: 'Loaded PLA spool' },
+          { status: 'running', time: '5 hours ago', note: 'Print started' },
+          { status: 'qc', time: '2 hours ago', note: 'Print completed, dimensional inspection' },
+          { status: 'ready', time: '1 hour ago', note: 'Passed QC inspection. Placed on pickup shelf.' }
+        ]
+      },
+      {
+        id: 2, title: 'Micro-fluidic test chip', status: 'quote_sent', machine: 'Formlabs Form 3L', centreId: 1,
+        innovator: 'Sneha Reddy', affiliation: 'startup', phone: '+919000000002',
+        material: 'resin_std', qty: 2, quote: 1140.00,
+        quoteDetails: { min: 75, grams: 30, machcost: 750, matcost: 240, setup: 150, disc: 0, total: 1140 },
+        slot: { day: getFutureDay(1), from: 14, to: 15 },
+        history: [
+          { status: 'quote_pending', time: '1 day ago', note: 'Job submitted by innovator' },
+          { status: 'quote_sent', time: '12 hours ago', note: 'Quote v1 issued: ₹1140.00' }
+        ]
+      },
+      {
+        id: 3, title: 'Sensor housing', status: 'quote_pending', machine: 'Ultimaker S5', centreId: 1,
+        innovator: 'Ravi Teja', affiliation: 'student', phone: '+919000000001',
+        material: 'pla', qty: 1, quote: null,
+        slot: { day: getFutureDay(2), from: 11, to: 12 },
+        history: [
+          { status: 'quote_pending', time: '2 hours ago', note: 'Job submitted by innovator' }
+        ]
+      },
+      {
+        id: 4, title: 'Jig plate', status: 'running', machine: 'Haas Mini Mill', centreId: 1,
+        innovator: 'Sneha Reddy', affiliation: 'startup', phone: '+919000000002',
+        material: 'al_6061', qty: 1, quote: 2600.00,
+        quoteDetails: { min: 90, grams: 250, machcost: 1800, matcost: 300, setup: 500, disc: 0, total: 2600 },
+        slot: { day: getFutureDay(0), from: 9, to: 11 },
+        history: [
+          { status: 'quote_pending', time: '2 days ago', note: 'Job submitted by innovator' },
+          { status: 'quote_sent', time: '1 day ago', note: 'Quote v1 issued: ₹2600.00' },
+          { status: 'quote_accepted', time: '1 day ago', note: 'Innovator accepted quote' },
+          { status: 'queued', time: '18 hours ago', note: 'Placed in milling queue' },
+          { status: 'setup', time: '3 hours ago', note: 'Stock clamped, tools calibrated' },
+          { status: 'running', time: '1 hour ago', note: 'CNC program cycle started' }
+        ]
+      },
+      {
+        id: 5, title: 'Gear prototype', status: 'quote_pending', machine: 'Ultimaker S5', centreId: 1,
+        innovator: 'Ravi Teja', affiliation: 'student', phone: '+919000000001',
+        material: 'pla', qty: 6, quote: null,
+        slot: { day: getFutureDay(3), from: 13, to: 15 },
+        history: [
+          { status: 'quote_pending', time: '30 minutes ago', note: 'Job submitted by innovator' }
+        ]
+      }
+    ],
+    stock: [
+      { machine: 'Ultimaker S5',     mat: 'pla',       have: 3915,  reorder: 500,  cap: 4000 },
+      { machine: 'Ultimaker S5',     mat: 'abs',       have: 2000,  reorder: 500,  cap: 2000 },
+      { machine: 'Formlabs Form 3L', mat: 'resin_std', have: 2970,  reorder: 500,  cap: 3000 },
+      { machine: 'Haas Mini Mill',   mat: 'al_6061',   have: 24750, reorder: 5000, cap: 25000 },
+      { machine: 'Trotec Speedy 400',mat: 'acrylic',   have: 12000, reorder: 2000, cap: 12000 },
+      { machine: 'Trotec Speedy 400',mat: 'mdf',       have: 20000, reorder: 3000, cap: 20000 }
+    ],
+    machineStatus: [
+      { name: 'Ultimaker S5',     status: 'available' },
+      { name: 'Formlabs Form 3L', status: 'available' },
+      { name: 'Haas Mini Mill',   status: 'in_use' },
+      { name: 'Trotec Speedy 400',status: 'maintenance' }
+    ],
+    bookings: [
+      { m: 1, day: getFutureDay(1), from: 10, to: 12, status: 'confirmed' },
+      { m: 1, day: getFutureDay(1), from: 14, to: 15, status: 'confirmed' }
+    ]
+  };
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) {
+      const parsed = JSON.parse(raw);
+      if(parsed && Array.isArray(parsed.jobs)) return parsed;
+    }
+  } catch(e) { console.warn('Error reading localStorage:', e); }
+  const init = getDefaultState();
+  saveState(init);
+  return init;
+}
+
+function saveState(s) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
+  } catch(e) { console.warn('Error saving to localStorage:', e); }
+  window.dispatchEvent(new CustomEvent('apic_state_update'));
+}
+
+let STATE = loadState();
+
+window.addEventListener('storage', e => {
+  if(e.key === STORAGE_KEY) {
+    STATE = loadState();
+    render(LAST);
+    renderMyJobs();
+  }
+});
+
+window.addEventListener('apic_state_update', () => {
+  render(LAST);
+  renderMyJobs();
+});
+
+function km(aLat,aLng,bLat,bLng){
+  const R=6371, rad=x=>x*Math.PI/180;
+  const v = Math.sin(rad(aLat))*Math.sin(rad(bLat))
+          + Math.cos(rad(aLat))*Math.cos(rad(bLat))*Math.cos(rad(bLng)-rad(aLng));
+  return R*Math.acos(Math.min(1.0, Math.max(-1.0, v)));
+}
+const sort3 = (a,b,c)=>[a,b,c].sort((p,q)=>q-p);
+
+/* Port of match_machines(). Same filters, same order. */
+function match(x,y,z,mat,tol,lat,lng){
+  const [d1,d2,d3] = sort3(x,y,z);
+  return MACHINES.filter(m=>{
+    const c = CENTRES[m.c];
+    if(!c.live) return false;                       // unlisted centres never surface
+    if(m.status==='retired') return false;
+    const [e1,e2,e3] = sort3(m.cap.x,m.cap.y,m.cap.z);
+    if(d1>e1||d2>e2||d3>e3) return false;           // physical fit, rotation-aware
+    if(mat && !m.mats[mat]) return false;
+    if(mat && m.mats[mat].stock<=0) return false;
+    if(tol && !(m.cap.tol && m.cap.tol<=tol)) return false;
+    return true;
+  }).map(m=>{
+    const c = CENTRES[m.c];
+    const [e1,e2,e3] = sort3(m.cap.x,m.cap.y,m.cap.z);
+    return {...m, centre:c,
+      dist: Math.round(km(lat,lng,c.lat,c.lng)*10)/10,
+      fit: (d1/e1)*(d2/e2)*(d3/e3),
+      env: [Math.round(e1),Math.round(e2),Math.round(e3)]};
+  }).sort((a,b)=>
+    (b.status==='available')-(a.status==='available') ||
+    a.dist-b.dist ||
+    b.fit-a.fit
+  );
+}
+
+let LAST = [];
+function run(){
+  const x=+val('x'), y=+val('y'), z=+val('z');
+  const mat=val('mat'), tol=val('tol')?+val('tol'):null;
+  const [lat,lng]=val('loc').split(',').map(Number);
+  if(!(x>0&&y>0&&z>0)){ render([],'Enter all three dimensions.'); return; }
+  LAST = match(x,y,z,mat,tol,lat,lng);
+  render(LAST);
+}
+const val = id => document.getElementById(id).value;
+
+function render(rows, msg){
+  const list=document.getElementById('list'), cnt=document.getElementById('count');
+  if(!rows.length){
+    cnt.textContent='0 MATCHES';
+    list.innerHTML = `<div class="empty"><b>${msg||'No machine in the network can make this part.'}</b>
+      ${msg?'':'Try a smaller size, a different material, or loosen the precision.'}</div>`;
+    return;
+  }
+  cnt.textContent = rows.length + (rows.length===1?' MATCH':' MATCHES');
+  const who = val('who'), mat = val('mat');
+  list.innerHTML = rows.map((m,i)=>{
+    const disc = who==='student' ? m.disc : 0;
+    const rate = m.rate*(1-disc/100);
+    const ms = mat ? m.mats[mat] : null;
+    const low = ms && ms.stock<=ms.reorder;
+    return `<div class="card ${m.status!=='available'?'maint':''}">
+      <div class="fit">
+        <b>${m.dist===0?'HERE':m.dist+'<span style="font-size:9px">km</span>'}</b>
+        <span>${i===0&&m.status==='available'?'BEST':'AWAY'}</span>
+      </div>
+      <div>
+        <div class="cname">${m.make} ${m.model}</div>
+        <div class="cmeta">${PROC[m.p]} · ${m.centre.name}</div>
+        <div class="creason">fits ${m.env[0]}×${m.env[1]}×${m.env[2]}mm${m.cap.tol?'; holds ±'+m.cap.tol+'mm':''}</div>
+        <div class="tagrow">
+          <span class="tag">${m.tag}</span>
+          ${ms?`<span class="tag ${low?'low':'stock'}">${low?'LOW STOCK · ':''}${Math.round(ms.stock)}G ${MATLABEL[mat].toUpperCase()}</span>`:''}
+          ${m.status!=='available'?`<span class="tag low">${m.status.toUpperCase()}</span>`:''}
+        </div>
+      </div>
+      <div class="right">
+        <div class="rate">
+          ${disc?`<span class="strike">₹${m.rate}</span> `:''}₹${Math.round(rate)}<small>/hr</small>
+        </div>
+        <button class="book" ${m.status!=='available'?'disabled':''}
+          onclick="openSlots(${m.id})">
+          ${m.status==='available'?'Book':'Unavailable'}
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ---- slot picker: mirrors free_slots() incl. local timezone safe dates ---- */
+let SEL=null, CUR=null;
+function openSlots(id){
+  CUR = MACHINES.find(m=>m.id===id); SEL=null;
+  const c = CENTRES[CUR.c];
+  let html = `<div class="shead">
+      <h3>${CUR.make} ${CUR.model}</h3>
+      <p>${c.name} · open ${fmtH(c.open)}–${fmtH(c.close)} · closed Sundays</p>
+    </div><div class="sbody">`;
+  for(let d=1; d<=5; d++){
+    const day = new Date(); day.setDate(day.getDate()+d);
+    const dow = day.getDay()===0?7:day.getDay();
+    if(!c.days.includes(dow)) continue;
+    const key = getDayKey(day);
+    let slots='';
+    // hourly slots; a slot must END by closing time
+    for(let h=c.open; h+1<=c.close; h++){
+      const taken = STATE.bookings.some(b=>b.m===CUR.id&&b.day===key&&h<b.to&&h+1>b.from);
+      slots += `<div class="slot ${taken?'taken':''}"
+        ${taken?'':`onclick="pick(this,'${key}',${h})"`}>${fmtH(h)}</div>`;
+    }
+    html += `<div class="day"><div class="dlabel">${day.toLocaleDateString('en-IN',
+      {weekday:'long',day:'numeric',month:'short'})}</div>
+      <div class="slots">${slots}</div></div>`;
+  }
+  const disc = val('who')==='student'?CUR.disc:0;
+  const rate = CUR.rate*(1-disc/100);
+  html += `</div><div class="sfoot">
+      <div class="est">1 hr + setup ≈ <b id="est">₹${Math.round(rate+CUR.setup)}</b>
+        <br><span style="font-size:10px">machine ₹${Math.round(rate)} + setup ₹${CUR.setup}${disc?` · ${disc}% student rate`:''}</span>
+      </div>
+      <button class="ghost" onclick="closeM()">Cancel</button>
+      <button class="go" id="cf" onclick="confirm_()" disabled
+        style="opacity:.4">Confirm booking</button>
+    </div>`;
+  document.getElementById('sheet').innerHTML = html;
+  document.getElementById('modal').classList.add('on');
+}
+
+const fmtH = h => {
+  const hh=Math.floor(h), mm=Math.round((h-hh)*60);
+  const ap = hh>=12?'pm':'am', h12 = hh%12===0?12:hh%12;
+  return mm ? `${h12}:${String(mm).padStart(2,'0')}${ap}` : `${h12}${ap}`;
+};
+
+function pick(el,day,h){
+  document.querySelectorAll('.slot.sel').forEach(s=>s.classList.remove('sel'));
+  el.classList.add('sel'); SEL={day,h};
+  const b=document.getElementById('cf'); b.disabled=false; b.style.opacity=1;
+}
+
+function confirm_(){
+  if(!SEL) return;
+  const who = val('who');
+  const mat = val('mat');
+  const x = +val('x'), y = +val('y'), z = +val('z');
+  const newId = (STATE.jobs.length ? Math.max(...STATE.jobs.map(j=>j.id)) : 0) + 1;
+  const jid = 'JOB-' + String(newId).padStart(3,'0');
+  const matName = mat ? (MATLABEL[mat] || mat.toUpperCase()) : 'PLA';
+
+  const newJob = {
+    id: newId,
+    title: `${matName} Part (${x}×${y}×${z}mm)`,
+    innovator: who === 'student' ? 'Ravi Teja' : (who === 'startup' ? 'Sneha Reddy' : 'Innovator'),
+    affiliation: who,
+    phone: '+919000000001',
+    machine: `${CUR.make} ${CUR.model}`,
+    centreId: CUR.c,
+    material: mat || 'pla',
+    qty: 1,
+    dims: { x, y, z },
+    slot: { day: SEL.day, from: SEL.h, to: SEL.h + 1 },
+    quote: null,
+    status: 'quote_pending',
+    history: [
+      { status: 'quote_pending', time: 'Just now', note: `Booking confirmed for ${SEL.day} at ${fmtH(SEL.h)} on ${CUR.make} ${CUR.model}` }
+    ]
+  };
+
+  STATE.jobs.push(newJob);
+  STATE.bookings.push({ m: CUR.id, day: SEL.day, from: SEL.h, to: SEL.h + 1, status: 'confirmed' });
+  saveState(STATE);
+
+  const d = new Date(SEL.day + 'T00:00:00');
+  document.getElementById('sheet').innerHTML = `<div class="done">
+      <div class="tick">✓</div>
+      <h3>Slot Reserved</h3>
+      <p>${CUR.make} ${CUR.model} · ${CENTRES[CUR.c].name}</p>
+      <p>${d.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long'})} at ${fmtH(SEL.h)}</p>
+      <div class="jobno">${jid} · status: QUOTE PENDING</div>
+      <p style="font-size:12.5px">The centre has received your booking. Once reviewed, you will see your price quote below and can authorize production immediately.</p>
+      <button class="go" style="margin-top:14px;background:var(--verdigris);color:#fff" onclick="closeM();scrollToMyJobs()">View in My Tracker</button>
+    </div>`;
+  renderMyJobs();
+}
+
+/* ---- Innovator Live Tracker & Quote Acceptance ---- */
+const STEPS = [
+  { key: 'quote_pending',  label: 'Requested' },
+  { key: 'quote_sent',     label: 'Quoted' },
+  { key: 'quote_accepted', label: 'Accepted' },
+  { key: 'in_prod',        label: 'Production' },
+  { key: 'qc',             label: 'Inspection' },
+  { key: 'ready',          label: 'Ready / Done' }
+];
+
+function getStepIndex(status) {
+  if(status === 'quote_pending') return 0;
+  if(status === 'quote_sent') return 1;
+  if(status === 'quote_accepted' || status === 'queued') return 2;
+  if(status === 'setup' || status === 'running') return 3;
+  if(status === 'qc') return 4;
+  if(status === 'ready' || status === 'collected') return 5;
+  return -1;
+}
+
+function renderMyJobs(){
+  const list = document.getElementById('my_jobs_list');
+  const countBadge = document.getElementById('my_jobs_badge');
+  const countEl = document.getElementById('my_jobs_count');
+  if(!list) return;
+
+  const jobs = STATE.jobs.slice().sort((a,b) => b.id - a.id);
+  countBadge.textContent = jobs.length;
+  countEl.textContent = jobs.length + (jobs.length === 1 ? ' REQUEST' : ' REQUESTS');
+
+  if(!jobs.length){
+    list.innerHTML = `<div class="empty"><b>No active requests</b>Use the search tool above to find a machine and reserve a slot.</div>`;
+    return;
+  }
+
+  list.innerHTML = jobs.map(j => {
+    const stepIdx = getStepIndex(j.status);
+    const centre = CENTRES[j.centreId] || { name: 'APIC Prototyping Centre' };
+    const slotStr = j.slot ? `${j.slot.day} at ${fmtH(j.slot.from)}` : 'Flexible';
+    
+    let cardClass = 'pending';
+    if(j.status === 'quote_sent') cardClass = 'quote-ready';
+    else if(['setup','running','qc'].includes(j.status)) cardClass = 'in-progress';
+    else if(['ready','collected'].includes(j.status)) cardClass = 'ready';
+
+    // Stepper HTML
+    const stepperHtml = STEPS.map((s, idx) => {
+      let cls = '';
+      if(idx < stepIdx) cls = 'done';
+      else if(idx === stepIdx) cls = 'curr';
+      return `<div class="step ${cls}">${s.label}</div>`;
+    }).join('');
+
+    // Quote action box if quoted
+    let quoteHtml = '';
+    if(j.status === 'quote_sent' && j.quoteDetails){
+      const q = j.quoteDetails;
+      quoteHtml = `
+        <div class="quote-box">
+          <div class="qhead">Official Centre Quote Issued</div>
+          <div class="qgrid">
+            <div>Machine Time: <b>₹${q.machcost.toFixed(2)}</b> (${q.min} min)</div>
+            <div>Material (${q.grams}g): <b>₹${q.matcost.toFixed(2)}</b></div>
+            <div>Setup Fee: <b>₹${q.setup.toFixed(2)}</b></div>
+            ${q.disc ? `<div>Discount: <b style="color:var(--verdigris)">−₹${q.disc.toFixed(2)}</b></div>` : ''}
+          </div>
+          <div class="qtot">
+            <span>Total Payable: <b>₹${q.total.toFixed(2)}</b></span>
+            <button class="qbtn" onclick="acceptJobQuote(${j.id})">✓ Accept Quote &amp; Start Production</button>
+          </div>
+        </div>`;
+    } else if(j.status === 'quote_accepted' || j.status === 'queued') {
+      quoteHtml = `
+        <div style="background:#f4f9f6;border:1px solid #cce5d9;padding:10px 14px;border-radius:2px;font-size:12.5px;color:var(--verdigris);margin:10px 0">
+          ✓ Quote accepted (₹${Number(j.quote).toFixed(2)}). Centre staff have queued your job for fabrication.
+        </div>`;
+    } else if(j.status === 'ready') {
+      quoteHtml = `
+        <div style="background:#eefbf7;border:1px solid #a3e8d2;padding:12px 14px;border-radius:2px;font-size:13px;color:var(--steel-900);margin:10px 0">
+          <b style="color:var(--verdigris);display:block;margin-bottom:2px">● READY FOR PICKUP</b>
+          Your prototype has passed quality checks and is available at <b>${centre.name}</b> reception. Please present reference <b>JOB-${String(j.id).padStart(3,'0')}</b>.
+        </div>`;
+    }
+
+    // Recent history line
+    const lastHist = (j.history && j.history.length) ? j.history[j.history.length - 1] : null;
+    const historyHtml = lastHist ? `<div class="hist-log">Latest Update: ${lastHist.note} (${lastHist.time})</div>` : '';
+
+    return `
+      <div class="tcard ${cardClass}">
+        <div class="thead">
+          <div>
+            <div class="ttitle">JOB-${String(j.id).padStart(3,'0')}: ${j.title}</div>
+            <div class="tmeta">${j.machine} · ${centre.name} · Slot: ${slotStr} · Material: ${MATLABEL[j.material] || j.material}</div>
+          </div>
+          <div style="text-align:right">
+            <span class="tag ${cardClass === 'quote-ready' ? 'low' : (cardClass === 'ready' ? 'stock' : '')}">
+              ${(j.status || '').replace('_',' ').toUpperCase()}
+            </span>
+            ${j.quote ? `<div style="font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;margin-top:4px">₹${Number(j.quote).toFixed(2)}</div>` : ''}
+          </div>
+        </div>
+        <div class="stepper">${stepperHtml}</div>
+        ${quoteHtml}
+        ${historyHtml}
+      </div>`;
+  }).join('');
+}
+
+function acceptJobQuote(id){
+  const j = STATE.jobs.find(x => x.id === id);
+  if(!j || j.status !== 'quote_sent') return;
+  j.status = 'quote_accepted';
+  if(!j.history) j.history = [];
+  j.history.push({
+    status: 'quote_accepted',
+    time: 'Just now',
+    note: 'Quote accepted by innovator'
+  });
+  saveState(STATE);
+  renderMyJobs();
+  alert(`Quote for JOB-${String(id).padStart(3,'0')} accepted! The centre will now begin setup.`);
+}
+
+function scrollToMyJobs(){
+  const el = document.getElementById('my_jobs_section');
+  if(el) el.scrollIntoView({ behavior: 'smooth' });
+}
+
+function closeM(){ document.getElementById('modal').classList.remove('on'); }
+document.getElementById('modal').addEventListener('click',e=>{
+  if(e.target.id==='modal') closeM();
+});
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeM(); });
+
+run();
+renderMyJobs();
+</script>
+</body>
+</html>

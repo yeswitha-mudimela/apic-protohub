@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>APIC ProtoHub - Prototyping Network</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface": "#f8f9ff",
+            "error-container": "#ffdad6",
+            "background": "#f8f9ff",
+            "surface-dim": "#cbdbf5",
+            "on-secondary": "#ffffff",
+            "surface-variant": "#d3e4fe",
+            "surface-container": "#e5eeff",
+            "surface-bright": "#f8f9ff",
+            "on-tertiary-fixed": "#00201d",
+            "surface-tint": "#2151da",
+            "on-surface": "#0b1c30",
+            "secondary": "#445e8f",
+            "primary": "#0037b0",
+            "secondary-fixed": "#d7e2ff",
+            "on-primary-fixed": "#001551",
+            "primary-container": "#1d4ed8",
+            "tertiary": "#004e47",
+            "tertiary-fixed": "#89f5e7",
+            "on-secondary-container": "#385282",
+            "on-secondary-fixed-variant": "#2b4675",
+            "on-secondary-fixed": "#001a40",
+            "tertiary-container": "#00685f",
+            "surface-container-high": "#dce9ff",
+            "tertiary-fixed-dim": "#6bd8cb",
+            "error": "#ba1a1a",
+            "on-tertiary-container": "#7be7d9",
+            "inverse-surface": "#213145",
+            "secondary-container": "#adc7fe",
+            "on-error": "#ffffff",
+            "inverse-primary": "#b7c4ff",
+            "on-tertiary": "#ffffff",
+            "on-primary-container": "#cad3ff",
+            "outline-variant": "#c4c5d7",
+            "on-primary": "#ffffff",
+            "surface-container-lowest": "#ffffff",
+            "secondary-fixed-dim": "#adc7fe",
+            "on-primary-fixed-variant": "#0039b5",
+            "on-background": "#0b1c30",
+            "on-tertiary-fixed-variant": "#005049",
+            "surface-container-highest": "#d3e4fe",
+            "on-surface-variant": "#434655",
+            "inverse-on-surface": "#eaf1ff",
+            "primary-fixed-dim": "#b7c4ff",
+            "on-error-container": "#93000a",
+            "surface-container-low": "#eff4ff",
+            "outline": "#747686",
+            "primary-fixed": "#dce1ff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-xs": "0.25rem",
+            "gutter": "1.5rem",
+            "space-sm": "0.5rem",
+            "space-lg": "1.5rem",
+            "gutter-mobile": "0.75rem",
+            "margin": "2rem",
+            "margin-mobile": "1rem",
+            "space-md": "1rem",
+            "space-xl": "2.5rem"
+          },
+          "fontFamily": {
+            "body-sm": ["Inter"],
+            "headline-xl": ["Inter"],
+            "body-md": ["Inter"],
+            "headline-md": ["Inter"],
+            "headline-sm": ["Inter"],
+            "headline-xl-mobile": ["Inter"],
+            "body-lg": ["Inter"],
+            "label-sm": ["Inter"],
+            "code-md": ["Inter"],
+            "label-md": ["Inter"],
+            "headline-lg": ["Inter"],
+            "display-lg": ["Inter"],
+            "display-lg-mobile": ["Inter"]
+          },
+          "fontSize": {
+            "body-sm": ["13px", {"lineHeight": "20px", "fontWeight": "400"}],
+            "headline-xl": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+            "body-md": ["14px", {"lineHeight": "22px", "fontWeight": "400"}],
+            "headline-md": ["22px", {"lineHeight": "30px", "letterSpacing": "-0.005em", "fontWeight": "600"}],
+            "headline-sm": ["18px", {"lineHeight": "26px", "fontWeight": "600"}],
+            "headline-xl-mobile": ["26px", {"lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+            "body-lg": ["16px", {"lineHeight": "26px", "fontWeight": "400"}],
+            "label-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+            "code-md": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+            "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "600"}],
+            "headline-lg": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+            "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+            "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface antialiased flex flex-col min-h-screen pb-20 select-none">
+<!-- TOP APP BAR -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-gutter-mobile h-14 bg-surface-container-lowest dark:bg-inverse-surface border-b border-outline-variant">
+<div class="flex items-center space-x-2">
+<button aria-label="Open Navigation" class="w-8 h-8 flex items-center justify-center text-primary dark:text-inverse-primary active:scale-95 transition-transform duration-100">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<div class="flex flex-col">
+<span class="text-headline-sm font-headline-sm text-primary dark:text-inverse-primary tracking-tight leading-none">APIC ProtoHub</span>
+<span class="text-[10px] font-medium tracking-wide text-secondary uppercase mt-0.5 leading-tight">Govt of Andhra Pradesh Prototyping Network</span>
+</div>
+</div>
+<div class="flex items-center space-x-2">
+<button aria-label="Sensors and Machine Status" class="p-1.5 text-on-surface-variant hover:bg-surface-container active:scale-95 transition-transform duration-100 flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="sensors">sensors</span>
+</button>
+<button class="px-2.5 py-1 text-label-md font-label-md border border-outline-variant text-primary bg-surface-container-lowest hover:bg-surface-container-low transition-colors duration-150">
+        Sign In
+      </button>
+</div>
+</header>
+<!-- MAIN SCROLLABLE CONTENT CANVAS -->
+<main class="w-full max-w-[420px] mx-auto pt-14 flex-1 flex flex-col">
+<!-- 2. DEMO MODE SIMULATION BANNER -->
+<section class="bg-surface-container-low px-gutter-mobile py-2 border-b border-outline-variant flex items-center space-x-2">
+<span class="material-symbols-outlined text-[16px] text-secondary shrink-0" data-icon="info">info</span>
+<p class="text-label-sm font-label-sm text-on-surface-variant leading-tight">
+<span class="text-primary font-bold">Demo Sandbox:</span> Simulated OTP &amp; quote generator active for testing.
+      </p>
+</section>
+<!-- 3. HERO & VALUE PROPOSITION -->
+<section class="px-gutter-mobile pt-5 pb-4 border-b border-outline-variant bg-surface-container-lowest">
+<div class="inline-flex items-center gap-1.5 px-2 py-0.5 mb-2.5 bg-surface-container-low border border-outline-variant">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+<span class="text-[10px] font-code-md text-on-surface tracking-wider uppercase">Open State Hardware Facility Access</span>
+</div>
+<h1 class="text-headline-xl-mobile font-headline-xl-mobile text-on-surface leading-tight font-bold tracking-tight mb-2">
+        Precision Prototyping &amp; Industrial Fabrication across AP
+      </h1>
+<p class="text-body-md font-body-md text-on-surface-variant leading-snug mb-4">
+        Direct access to government &amp; institutional rapid prototyping centres in Visakhapatnam, Vijayawada, Tirupati &amp; Anantapur for students and startups.
+      </p>
+<div class="flex flex-col gap-2">
+<button class="w-full py-2.5 px-4 bg-primary-container text-on-primary font-label-md text-label-md flex items-center justify-center gap-2 border border-primary-container active:scale-95 transition-transform duration-100">
+<span class="material-symbols-outlined text-[18px]" data-icon="search">search</span>
+          Find a Machine or Centre
+        </button>
+<button class="w-full py-2.5 px-4 bg-surface-container-lowest text-on-surface font-label-md text-label-md flex items-center justify-center gap-2 border border-outline-variant active:scale-95 transition-transform duration-100 hover:bg-surface-container-low">
+<span class="material-symbols-outlined text-[18px]" data-icon="alt_route">alt_route</span>
+          How It Works (4 Steps)
+        </button>
+</div>
+</section>
+<!-- 4. TRANSPARENT 4-STEP PROCESS STRIP -->
+<section class="bg-surface-container-low p-gutter-mobile border-b border-outline-variant">
+<div class="flex items-center justify-between mb-2">
+<h2 class="text-label-md font-label-md text-secondary uppercase tracking-widest font-semibold">Standardized Workflow</h2>
+<span class="text-[10px] font-code-md text-outline">DFM-VERIFIED</span>
+</div>
+<div class="grid grid-cols-4 gap-1.5 bg-surface-container-lowest p-2 border border-outline-variant">
+<div class="flex flex-col">
+<span class="text-label-sm font-label-sm text-primary mb-1">01. Search</span>
+<p class="text-[11px] leading-tight text-on-surface-variant">Capabilities &amp; tolerances</p>
+</div>
+<div class="flex flex-col border-l border-outline-variant pl-1.5">
+<span class="text-label-sm font-label-sm text-primary mb-1">02. Upload</span>
+<p class="text-[11px] leading-tight text-on-surface-variant">CAD (.step / .stl)</p>
+</div>
+<div class="flex flex-col border-l border-outline-variant pl-1.5">
+<span class="text-label-sm font-label-sm text-primary mb-1">03. Review</span>
+<p class="text-[11px] leading-tight text-on-surface-variant">Auto DFM &amp; Quote</p>
+</div>
+<div class="flex flex-col border-l border-outline-variant pl-1.5">
+<span class="text-label-sm font-label-sm text-primary mb-1">04. Deliver</span>
+<p class="text-[11px] leading-tight text-on-surface-variant">Pickup or Courier</p>
+</div>
+</div>
+</section>
+<!-- 5. LIVE NETWORK CAPABILITY & CENTRE FILTER -->
+<section class="p-gutter-mobile bg-surface-container-lowest border-b border-outline-variant">
+<div class="flex items-center justify-between mb-2">
+<span class="text-label-md font-label-md text-secondary uppercase tracking-wider">Facility Gating</span>
+<button class="inline-flex items-center text-label-sm font-label-sm text-primary border border-outline-variant px-2 py-0.5 bg-surface">
+<span>All AP Centres</span>
+<span class="material-symbols-outlined text-[14px] ml-1" data-icon="arrow_drop_down">arrow_drop_down</span>
+</button>
+</div>
+<!-- Segmented filter buttons horizontal scroll -->
+<div class="flex gap-1 overflow-x-auto pb-1 no-scrollbar">
+<button class="px-2.5 py-1 whitespace-nowrap bg-primary-container text-on-primary text-label-sm font-label-sm border border-primary-container">
+          All Processes
+        </button>
+<button class="px-2.5 py-1 whitespace-nowrap bg-surface-container-low text-on-surface-variant text-label-sm font-label-sm border border-outline-variant hover:bg-surface-container">
+          3D Printing (Metal/Polymer)
+        </button>
+<button class="px-2.5 py-1 whitespace-nowrap bg-surface-container-low text-on-surface-variant text-label-sm font-label-sm border border-outline-variant hover:bg-surface-container">
+          CNC Milling
+        </button>
+<button class="px-2.5 py-1 whitespace-nowrap bg-surface-container-low text-on-surface-variant text-label-sm font-label-sm border border-outline-variant hover:bg-surface-container">
+          Electronics / PCB
+        </button>
+<button class="px-2.5 py-1 whitespace-nowrap bg-surface-container-low text-on-surface-variant text-label-sm font-label-sm border border-outline-variant hover:bg-surface-container">
+          Testing &amp; Metrology
+        </button>
+</div>
+</section>
+<!-- 6. CENTRE & EQUIPMENT PREVIEW CARDS (HIGH DENSITY) -->
+<section class="p-gutter-mobile space-y-3">
+<div class="flex justify-between items-center">
+<span class="text-label-sm font-label-sm uppercase tracking-wider text-secondary">Operational Plates (3 Verified Nodes)</span>
+<span class="text-label-sm font-label-sm text-outline">TOL: ISO 2768-m</span>
+</div>
+<!-- CARD 1 -->
+<article class="bg-surface-container-lowest border border-outline-variant p-3 flex flex-col gap-2">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface leading-tight font-bold">APIC Vizag Hub â 5-Axis CNC &amp; DMLS</h3>
+<p class="text-label-sm font-label-sm text-secondary">Visakhapatnam SEZ Tech Complex</p>
+</div>
+<span class="inline-flex items-center px-2 py-0.5 bg-surface-container-low text-tertiary border border-tertiary-fixed-dim text-[11px] font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary-container mr-1.5"></span>
+            Operational (2 slots open)
+          </span>
+</div>
+<div class="bg-surface p-2 border border-outline-variant space-y-1">
+<div class="flex justify-between text-body-sm font-body-sm">
+<span class="text-on-surface-variant font-medium">Valid Materials:</span>
+<span class="text-on-surface font-code-md text-[12px]">Al 6061, SS 316L, Ti-6Al-4V</span>
+</div>
+<div class="flex justify-between text-body-sm font-body-sm">
+<span class="text-on-surface-variant font-medium">Subsidized Tariff:</span>
+<span class="text-primary font-semibold font-code-md text-[12px]">From â¹450/hr (Govt Subsidized)</span>
+</div>
+<div class="flex justify-between text-body-sm font-body-sm">
+<span class="text-on-surface-variant font-medium">Max Bed Dimension:</span>
+<span class="text-on-surface font-code-md text-[12px]">500 x 500 x 400 mm</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-1 border-t border-outline-variant">
+<span class="text-[11px] font-code-md text-secondary">NODE ID: AP-VZG-01</span>
+<div class="flex gap-2">
+<button class="px-3 py-1 bg-surface-container-low text-on-surface border border-outline-variant text-label-sm font-label-sm hover:bg-surface-container">
+              Check Specs
+            </button>
+<button class="px-3 py-1 bg-primary text-on-primary text-label-sm font-label-sm hover:bg-primary-container">
+              Configure Job
+            </button>
+</div>
+</div>
+</article>
+<!-- CARD 2 -->
+<article class="bg-surface-container-lowest border border-outline-variant p-3 flex flex-col gap-2">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface leading-tight font-bold">Tirupati Hardware Fab â Multi-Layer PCB</h3>
+<p class="text-label-sm font-label-sm text-secondary">IIT Tirupati Research Park</p>
+</div>
+<span class="inline-flex items-center px-2 py-0.5 bg-surface-container-low text-tertiary border border-tertiary-fixed-dim text-[11px] font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary-container mr-1.5"></span>
+            Operational
+          </span>
+</div>
+<div class="bg-surface p-2 border border-outline-variant space-y-1">
+<div class="flex justify-between text-body-sm font-body-sm">
+<span class="text-on-surface-variant font-medium">Capabilities:</span>
+<span class="text-on-surface font-code-md text-[12px]">4-Layer PCB, 0.1mm Trace, SMT Pick &amp; Place</span>
+</div>
+<div class="flex justify-between text-body-sm font-body-sm">
+<span class="text-on-surface-variant font-medium">Turnaround Time:</span>
+<span class="text-on-surface font-code-md text-[12px]">48 Hours (Standard Verification)</span>
+</div>
+<div class="flex justify-between text-body-sm font-body-sm">
+<span class="text-on-surface-variant font-medium">Stencils &amp; Metrology:</span>
+<span class="text-tertiary font-code-md text-[12px]">Optical AOI Inspection Included</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-1 border-t border-outline-variant">
+<span class="text-[11px] font-code-md text-secondary">NODE ID: AP-TPT-04</span>
+<div class="flex gap-2">
+<button class="px-3 py-1 bg-surface-container-low text-on-surface border border-outline-variant text-label-sm font-label-sm hover:bg-surface-container">
+              Check Specs
+            </button>
+<button class="px-3 py-1 bg-primary text-on-primary text-label-sm font-label-sm hover:bg-primary-container">
+              Upload Gerber
+            </button>
+</div>
+</div>
+</article>
+<!-- CARD 3 -->
+<article class="bg-surface-container-lowest border border-outline-variant p-3 flex flex-col gap-2">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface leading-tight font-bold">Anantapur Polymer Centre â Industrial SLS</h3>
+<p class="text-label-sm font-label-sm text-secondary">JNTU Industrial Park, Anantapur</p>
+</div>
+<span class="inline-flex items-center px-2 py-0.5 bg-surface-container-high text-secondary border border-secondary text-[11px] font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary mr-1.5"></span>
+            Under Calibration
+          </span>
+</div>
+<div class="bg-surface p-2 border border-outline-variant space-y-1">
+<div class="flex justify-between text-body-sm font-body-sm">
+<span class="text-on-surface-variant font-medium">Processes:</span>
+<span class="text-on-surface font-code-md text-[12px]">Selective Laser Sintering (PA12 Nylon), FDM (PEEK)</span>
+</div>
+<div class="flex justify-between text-body-sm font-body-sm">
+<span class="text-on-surface-variant font-medium">Calibration Status:</span>
+<span class="text-on-surface-variant font-code-md text-[12px]">Laser Recalibration (Available Thursday)</span>
+</div>
+<div class="flex justify-between text-body-sm font-body-sm">
+<span class="text-on-surface-variant font-medium">Pre-Queue:</span>
+<span class="text-on-surface font-code-md text-[12px]">Accepting Staged CAD Queues</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-1 border-t border-outline-variant">
+<span class="text-[11px] font-code-md text-secondary">NODE ID: AP-ATP-02</span>
+<div class="flex gap-2">
+<button class="px-3 py-1 bg-surface-container-low text-on-surface border border-outline-variant text-label-sm font-label-sm hover:bg-surface-container">
+              Check Specs
+            </button>
+<button class="px-3 py-1 bg-surface-container-low text-secondary border border-outline-variant text-label-sm font-label-sm" disabled="">
+              Reserve Slot
+            </button>
+</div>
+</div>
+</article>
+</section>
+<!-- 7. TRUST & OPERATIONAL TRANSPARENCY SECTION -->
+<section class="p-gutter-mobile mb-4">
+<div class="bg-surface-container-low border border-outline-variant p-3.5 space-y-2.5">
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-primary text-[20px]" data-icon="verified_user">verified_user</span>
+<h4 class="text-headline-sm font-headline-sm text-on-surface font-bold">Institutional Accountability</h4>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant leading-relaxed">
+          No hidden markups. Standardized ISO 2768 tolerances. Guaranteed IP confidentiality with government institutional audit logs for student patents and deep-tech inventions.
+        </p>
+<div class="pt-2 border-t border-outline-variant grid grid-cols-2 gap-2 text-center">
+<div class="p-1 bg-surface border border-outline-variant">
+<span class="block text-label-sm font-code-md text-primary font-bold">100% NON-DISCLOSURE</span>
+<span class="block text-[10px] text-secondary">Govt IP Vault Storage</span>
+</div>
+<div class="p-1 bg-surface border border-outline-variant">
+<span class="block text-label-sm font-code-md text-primary font-bold">DIRECT SUBSIDY</span>
+<span class="block text-[10px] text-secondary">AP Innovations Mission</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BOTTOM NAVIGATION BAR (Anchored Shell Component) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-gutter-mobile py-2 bg-surface-container-lowest dark:bg-inverse-surface border-t border-outline-variant dark:border-outline">
+<!-- Item 1: Centres (ACTIVE) -->
+<a class="flex flex-col items-center justify-center text-primary dark:text-inverse-primary font-semibold py-1 active:scale-95 transition-transform duration-100" href="#centres">
+<span class="material-symbols-outlined text-[22px]" data-icon="precision_manufacturing">precision_manufacturing</span>
+<span class="text-label-sm font-label-sm mt-0.5">Centres</span>
+</a>
+<!-- Item 2: Submit Job -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant py-1 hover:bg-surface-container-low dark:hover:bg-surface-dim active:scale-95 transition-transform duration-100" href="#submit">
+<span class="material-symbols-outlined text-[22px]" data-icon="add_circle">add_circle</span>
+<span class="text-label-sm font-label-sm mt-0.5">Submit Job</span>
+</a>
+<!-- Item 3: Telemetry -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant py-1 hover:bg-surface-container-low dark:hover:bg-surface-dim active:scale-95 transition-transform duration-100" href="#telemetry">
+<span class="material-symbols-outlined text-[22px]" data-icon="monitoring">monitoring</span>
+<span class="text-label-sm font-label-sm mt-0.5">Telemetry</span>
+</a>
+<!-- Item 4: Profile -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant py-1 hover:bg-surface-container-low dark:hover:bg-surface-dim active:scale-95 transition-transform duration-100" href="#profile">
+<span class="material-symbols-outlined text-[22px]" data-icon="account_circle">account_circle</span>
+<span class="text-label-sm font-label-sm mt-0.5">Profile</span>
+</a>
+</nav>
+</body></html>

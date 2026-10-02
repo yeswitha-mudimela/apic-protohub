@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Staff Queue — Shop-Floor Production Execution | APIC ProtoHub</title>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/css/tokens.css"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#f8f9ff] text-[#0b1c30]">
+  <!-- Shell Navigation injected by shell.js -->
+
+  <main class="max-w-7xl mx-auto px-6 py-8">
+    <div class="mb-8 flex justify-between items-end">
+      <div>
+        <div class="text-xs font-mono font-bold text-teal-700 tracking-wider uppercase mb-1">SHOP-FLOOR OPERATOR CONSOLE</div>
+        <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight">Facility Production Dispatch & Execution</h1>
+        <p class="text-sm text-[#434655]">Scoped to assigned centre equipment. Move jobs through setup, execution, metrology, and collection.</p>
+      </div>
+      <div class="text-right">
+        <span class="proto-badge badge-live">CENTRE: APIC VIJAYAWADA (BZA)</span>
+        <div class="text-xs text-[#747686] mt-1 font-mono">Assigned Staff: M. Lakshmi</div>
+      </div>
+    </div>
+
+    <!-- Active Production Stages Strip -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div class="proto-card bg-white p-4">
+        <div class="text-xs font-mono uppercase text-[#747686]">1. In Setup</div>
+        <div class="text-2xl font-extrabold text-blue-900 mt-1 font-mono">1</div>
+        <div class="text-[11px] text-[#434655] mt-1">Bed calibration & pre-heat</div>
+      </div>
+      <div class="proto-card bg-white p-4 border-amber-300">
+        <div class="text-xs font-mono uppercase text-amber-700 font-bold">2. Running Cycles</div>
+        <div class="text-2xl font-extrabold text-amber-600 mt-1 font-mono">2</div>
+        <div class="text-[11px] text-[#434655] mt-1">Consuming raw stock</div>
+      </div>
+      <div class="proto-card bg-white p-4">
+        <div class="text-xs font-mono uppercase text-teal-700 font-bold">3. QC & Metrology</div>
+        <div class="text-2xl font-extrabold text-teal-600 mt-1 font-mono">1</div>
+        <div class="text-[11px] text-[#434655] mt-1">Caliper & tolerance check</div>
+      </div>
+      <div class="proto-card bg-white p-4">
+        <div class="text-xs font-mono uppercase text-emerald-700 font-bold">4. Ready for Pickup</div>
+        <div class="text-2xl font-extrabold text-emerald-600 mt-1 font-mono">3</div>
+        <div class="text-[11px] text-[#434655] mt-1">Stored in bay lockers</div>
+      </div>
+    </div>
+
+    <!-- Work Order Execution Cards -->
+    <section class="space-y-4">
+      <h2 class="text-lg font-bold">Actionable Work Orders for Today</h2>
+
+      <!-- Work Order 1 -->
+      <div class="proto-card border-l-4 border-l-amber-500">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="font-bold text-base">Job #002 — Venturi Impeller Housing</span>
+              <span class="proto-badge badge-amber">RUNNING (CYCLE 64%)</span>
+              <span class="text-xs font-mono text-[#747686]">Target: Formlabs Form 3L</span>
+            </div>
+            <div class="text-xs text-[#434655] flex flex-wrap gap-4 mt-1 font-mono">
+              <span>Customer: Sneha Reddy (HydroFilter Labs)</span>
+              <span>Material: Resin (Standard Grey)</span>
+              <span>Layer: 1,420 / 2,200</span>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <button class="proto-btn proto-btn-secondary text-xs" onclick="alert('Viewing toolpath simulation & machine telemetry...')">
+              Inspect Telemetry
+            </button>
+            <button class="proto-btn proto-btn-primary text-xs" onclick="alert('Advance Job triggered. Enforcing state machine transition in manager.sql...')">
+              Advance to Metrology QC →
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Work Order 2 -->
+      <div class="proto-card border-l-4 border-l-blue-500">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="font-bold text-base">Job #004 — Microfluidic Chip Manifold</span>
+              <span class="proto-badge badge-neutral">SETUP PREPARATION</span>
+              <span class="text-xs font-mono text-[#747686]">Target: Epilog Fusion Pro 32</span>
+            </div>
+            <div class="text-xs text-[#434655] flex flex-wrap gap-4 mt-1 font-mono">
+              <span>Customer: Ravi Teja (JNTU)</span>
+              <span>Material: Acrylic Sheet 3.0mm</span>
+              <span>Required Tolerance: ±0.05 mm</span>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <button class="proto-btn proto-btn-primary text-xs" onclick="alert('Triggering cycle start. Inventory row locked FOR UPDATE and stock deducted.')">
+              Start Laser Cutting Cycle →
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Deliberate Phase Placeholder Banner -->
+    <div class="placeholder-box mt-8">
+      <div class="tag">METROLOGY & REWORK STATE MACHINE</div>
+      <div class="text-xs font-bold text-[#0b1c30] mb-1">Pessimistic Inventory Locking & QC Loop</div>
+      <p class="text-xs text-[#434655] max-w-lg mx-auto">
+        State transitions in the shop floor dispatch queue are executed via PostgreSQL function <code>advance_job()</code> with row locks (<code>FOR UPDATE</code>) to ensure zero negative inventory and audit-compliant stock ledger entries.
+      </p>
+    </div>
+  </main>
+
+  <script src="/js/shell.js"></script>
+</body>
+</html>

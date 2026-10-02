@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Admin Portal — Statewide APIS Network | APIC ProtoHub</title>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/css/tokens.css"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#f8f9ff] text-[#0b1c30]">
+  <!-- Shell Navigation injected by shell.js -->
+
+  <main class="max-w-7xl mx-auto px-6 py-8">
+    <div class="mb-6 flex justify-between items-end">
+      <div>
+        <div class="text-xs font-mono font-bold text-blue-700 tracking-wider uppercase mb-1">STATEWIDE NETWORK GOVERNANCE</div>
+        <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight">Andhra Pradesh Innovation Society (APIS) Administration</h1>
+        <p class="text-sm text-[#434655]">Statewide oversight of prototyping infrastructure, capacity utilization, and facility commissioning.</p>
+      </div>
+      <div class="text-right">
+        <span class="proto-badge badge-live">ROLE: APIS STATEWIDE ADMIN</span>
+        <div class="text-xs text-[#747686] mt-1 font-mono">Full Cross-Centre Scope</div>
+      </div>
+    </div>
+
+    <!-- Statewide Metrics Strip -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div class="proto-card">
+        <div class="text-xs font-mono uppercase text-[#747686]">Network Centres</div>
+        <div class="text-2xl font-bold font-mono text-blue-900 mt-1">5 Regional Hubs</div>
+        <div class="text-[11px] text-emerald-700 font-bold mt-1">4 Live • 1 Calibrating</div>
+      </div>
+      <div class="proto-card">
+        <div class="text-xs font-mono uppercase text-[#747686]">Active Equipment</div>
+        <div class="text-2xl font-bold font-mono text-blue-900 mt-1">12 Machines</div>
+        <div class="text-[11px] text-[#434655] mt-1">FDM, SLA, CNC, SLS, PCB</div>
+      </div>
+      <div class="proto-card">
+        <div class="text-xs font-mono uppercase text-[#747686]">Network Utilization</div>
+        <div class="text-2xl font-bold font-mono text-emerald-700 mt-1">78.4%</div>
+        <div class="text-[11px] text-[#434655] mt-1">v_machine_utilization</div>
+      </div>
+      <div class="proto-card">
+        <div class="text-xs font-mono uppercase text-[#747686]">Student Subsidies Disbursed</div>
+        <div class="text-2xl font-bold font-mono text-blue-900 mt-1">₹48,250</div>
+        <div class="text-[11px] text-[#434655] mt-1">Govt subsidized rate tier</div>
+      </div>
+    </div>
+
+    <!-- Regional Centres Commissioning Table -->
+    <section class="proto-card mb-8">
+      <div class="flex justify-between items-center mb-4 pb-2 border-b border-[#c4c5d7]">
+        <h2 class="text-base font-bold">1. Regional Prototyping Facilities Management</h2>
+        <span class="text-xs font-mono text-[#747686]">Live State from PostgreSQL centre</span>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs">
+          <thead>
+            <tr class="border-b border-[#c4c5d7] font-mono text-[#434655] uppercase">
+              <th class="pb-2">Centre Name</th>
+              <th class="pb-2">District</th>
+              <th class="pb-2">Host Campus</th>
+              <th class="pb-2">Phone</th>
+              <th class="pb-2">Status</th>
+              <th class="pb-2">Commissioning Control</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[#eff4ff]">
+            <tr>
+              <td class="py-3 font-bold text-blue-900">APIC Visakhapatnam</td>
+              <td class="py-3">Visakhapatnam</td>
+              <td class="py-3">AU Engineering College Campus</td>
+              <td class="py-3 font-mono">0891-2844000</td>
+              <td class="py-3"><span class="proto-badge badge-live">LIVE</span></td>
+              <td class="py-3"><button class="text-xs text-rose-700 font-bold hover:underline" onclick="alert('Admin toggle: Maintenance hold')">Take Offline</button></td>
+            </tr>
+            <tr>
+              <td class="py-3 font-bold text-blue-900">APIC Vijayawada</td>
+              <td class="py-3">NTR</td>
+              <td class="py-3">Siddhartha Engineering College</td>
+              <td class="py-3 font-mono">0866-2582333</td>
+              <td class="py-3"><span class="proto-badge badge-live">LIVE</span></td>
+              <td class="py-3"><button class="text-xs text-rose-700 font-bold hover:underline" onclick="alert('Admin toggle: Maintenance hold')">Take Offline</button></td>
+            </tr>
+            <tr>
+              <td class="py-3 font-bold text-blue-900">APIC Tirupati</td>
+              <td class="py-3">Tirupati</td>
+              <td class="py-3">SVU Campus</td>
+              <td class="py-3 font-mono">0877-2289000</td>
+              <td class="py-3"><span class="proto-badge badge-live">LIVE</span></td>
+              <td class="py-3"><button class="text-xs text-rose-700 font-bold hover:underline" onclick="alert('Admin toggle: Maintenance hold')">Take Offline</button></td>
+            </tr>
+            <tr>
+              <td class="py-3 font-bold text-blue-900">APIC Kakinada</td>
+              <td class="py-3">Kakinada</td>
+              <td class="py-3">JNTU-K Campus</td>
+              <td class="py-3 font-mono">0884-2300900</td>
+              <td class="py-3"><span class="proto-badge badge-live">LIVE</span></td>
+              <td class="py-3"><button class="text-xs text-rose-700 font-bold hover:underline" onclick="alert('Admin toggle: Maintenance hold')">Take Offline</button></td>
+            </tr>
+            <tr class="bg-amber-50/40">
+              <td class="py-3 font-bold text-amber-900">APIC Anantapur</td>
+              <td class="py-3">Anantapur</td>
+              <td class="py-3">JNTU-A Campus</td>
+              <td class="py-3 font-mono">08554-272000</td>
+              <td class="py-3"><span class="proto-badge badge-amber">CALIBRATING</span></td>
+              <td class="py-3"><button class="text-xs text-emerald-700 font-bold hover:underline" onclick="alert('Admin commissioned Anantapur centre! Updated is_live = TRUE in database.')">Commission Live →</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Deliberate Phase Placeholder Banner -->
+    <div class="placeholder-box">
+      <div class="tag">STATEWIDE UTILIZATION METRICS</div>
+      <div class="text-xs font-bold text-[#0b1c30] mb-1">Statewide Auditing & Machine Telemetry View</div>
+      <p class="text-xs text-[#434655] max-w-lg mx-auto">
+        Statewide analytics aggregating equipment utilization (<code>v_machine_utilization</code>) and consumable inventory alerts (<code>v_material_alerts</code>) across all Andhra Pradesh facilities are backed by direct PostgreSQL database views.
+      </p>
+    </div>
+  </main>
+
+  <script src="/js/shell.js"></script>
+</body>
+</html>

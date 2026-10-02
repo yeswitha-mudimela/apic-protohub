@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>APIC ProtoHub — Manager Console</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --steel-900:#16191d; --steel-700:#2b3038; --steel-500:#5a626e;
+    --steel-300:#9aa3b0; --steel-100:#e4e7eb; --steel-50:#f4f6f8;
+    --paper:#fbfcfd; --safety:#f5c518; --oxide:#c1440e; --verd:#1c7c6c;
+    --line:#d3d8de;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--steel-50);color:var(--steel-900);
+    font-family:'Inter',system-ui,sans-serif;font-size:15px;line-height:1.5}
+  .wrap{max-width:1240px;margin:0 auto;padding:0 24px}
+
+  /* header */
+  header{background:var(--steel-900);color:#fff;border-bottom:3px solid var(--safety)}
+  .hbar{display:flex;align-items:center;gap:14px;padding:14px 0}
+  .mark{font-family:'Archivo Narrow',sans-serif;font-weight:700;font-size:20px;
+    letter-spacing:.06em;text-transform:uppercase}
+  .mark span{color:var(--safety)}
+  .console-tag{font-family:'JetBrains Mono',monospace;font-size:10px;
+    color:var(--steel-900);background:var(--safety);padding:3px 8px;letter-spacing:.1em}
+  .whoami{margin-left:auto;text-align:right;font-size:12px;color:var(--steel-300)}
+  .whoami b{color:#fff;font-family:'Archivo Narrow',sans-serif;font-size:14px}
+
+  /* stat strip */
+  .stats{background:var(--steel-700);border-bottom:1px solid #000}
+  .statrow{display:flex;gap:0}
+  .stat{flex:1;padding:14px 20px;border-right:1px solid rgba(255,255,255,.08)}
+  .stat:last-child{border-right:none}
+  .stat b{display:block;font-family:'Archivo Narrow',sans-serif;font-size:28px;
+    font-weight:600;color:#fff;line-height:1}
+  .stat.alert b{color:var(--safety)}
+  .stat.down b{color:var(--oxide)}
+  .stat span{font-family:'JetBrains Mono',monospace;font-size:9px;
+    letter-spacing:.08em;color:var(--steel-300);text-transform:uppercase}
+
+  /* layout */
+  .grid{display:grid;grid-template-columns:1fr 320px;gap:24px;padding:24px 0 60px}
+  @media(max-width:900px){.grid{grid-template-columns:1fr}}
+
+  .colhead{display:flex;align-items:baseline;gap:10px;margin-bottom:14px;
+    padding-bottom:8px;border-bottom:2px solid var(--steel-900)}
+  .colhead h2{font-family:'Archivo Narrow',sans-serif;font-size:18px;font-weight:600}
+  .colhead .n{font-family:'JetBrains Mono',monospace;font-size:12px;
+    color:var(--steel-500);margin-left:auto}
+
+  /* job card — a worklist item, not a table row */
+  .job{background:#fff;border:1px solid var(--line);margin-bottom:10px;
+    display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;
+    padding:14px 16px;border-left:4px solid var(--steel-300)}
+  .job.act{border-left-color:var(--safety)}       /* needs manager action */
+  .job.run{border-left-color:var(--verd)}          /* in progress */
+  .job.wait{border-left-color:var(--steel-300);opacity:.82}  /* waiting on others */
+  .jid{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--steel-500);
+    text-align:center;min-width:44px}
+  .jid b{display:block;font-size:15px;color:var(--steel-900)}
+  .jtitle{font-family:'Archivo Narrow',sans-serif;font-size:16px;font-weight:600}
+  .jmeta{font-size:12.5px;color:var(--steel-500);margin-top:1px}
+  .jtags{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap}
+  .tag{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.04em;
+    padding:2px 6px;border:1px solid var(--line);color:var(--steel-500);text-transform:uppercase}
+  .tag.q{border-color:var(--verd);color:var(--verd)}
+  .jright{text-align:right;min-width:130px}
+  .status-lbl{font-family:'JetBrains Mono',monospace;font-size:10px;
+    color:var(--steel-500);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+  button{font-family:'Archivo Narrow',sans-serif;cursor:pointer;border:none;
+    letter-spacing:.05em;text-transform:uppercase}
+  .act-btn{padding:8px 16px;background:var(--steel-900);color:#fff;font-weight:600;
+    font-size:13px}
+  .act-btn:hover{background:var(--verd)}
+  .act-btn.prime{background:var(--safety);color:var(--steel-900)}
+  .act-btn.prime:hover{background:#ffd83d}
+  .act-btn.warn{background:#fff;color:var(--oxide);border:1px solid var(--oxide);padding:7px 12px}
+  .act-btn.warn:hover{background:var(--oxide);color:#fff}
+  .wait-note{font-size:11.5px;color:var(--steel-300);font-style:italic}
+  .btnrow{display:flex;gap:6px;justify-content:flex-end;margin-top:4px}
+
+  /* right rail */
+  .panel{background:#fff;border:1px solid var(--line);margin-bottom:20px}
+  .panel h3{font-family:'Archivo Narrow',sans-serif;font-size:14px;font-weight:600;
+    padding:11px 14px;border-bottom:1px solid var(--line);
+    text-transform:uppercase;letter-spacing:.04em}
+  .panel h3.warn{background:#fdf3ef;color:var(--oxide)}
+  .stock{padding:11px 14px;border-bottom:1px solid var(--steel-50);
+    display:flex;align-items:center;gap:10px}
+  .stock:last-child{border-bottom:none}
+  .stock .bar{flex:1}
+  .stock .sname{font-size:13px;font-weight:500}
+  .stock .smeta{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--steel-500)}
+  .meter{height:5px;background:var(--steel-100);margin-top:5px;position:relative}
+  .meter i{position:absolute;left:0;top:0;bottom:0;background:var(--verd)}
+  .meter i.low{background:var(--oxide)}
+  .restock{padding:5px 10px;background:var(--steel-900);color:#fff;font-size:11px;font-weight:600}
+  .restock:hover{background:var(--verd)}
+  .empty{padding:24px 14px;text-align:center;color:var(--steel-500);font-size:13px}
+  .empty b{display:block;font-family:'Archivo Narrow',sans-serif;font-size:15px;
+    color:var(--steel-900);margin-bottom:3px}
+
+  /* modal */
+  .modal{position:fixed;inset:0;background:rgba(22,25,29,.6);display:none;
+    align-items:center;justify-content:center;padding:20px;z-index:50}
+  .modal.on{display:flex}
+  .sheet{background:#fff;max-width:520px;width:100%;border-top:4px solid var(--safety)}
+  .shead{padding:16px 20px;border-bottom:1px solid var(--line)}
+  .shead h3{font-family:'Archivo Narrow',sans-serif;font-size:18px;font-weight:600}
+  .shead p{font-size:12.5px;color:var(--steel-500);margin-top:2px}
+  .sbody{padding:18px 20px}
+  .field{margin-bottom:14px}
+  .field label{display:block;font-family:'JetBrains Mono',monospace;font-size:10px;
+    letter-spacing:.08em;text-transform:uppercase;color:var(--steel-500);margin-bottom:5px}
+  .field input{width:100%;padding:9px 11px;border:1px solid var(--line);
+    font-family:'JetBrains Mono',monospace;font-size:14px}
+  .field input:focus{outline:2px solid var(--safety);border-color:var(--safety)}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .breakdown{background:var(--steel-50);border:1px solid var(--line);padding:12px 14px;margin-top:4px}
+  .bline{display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;
+    font-size:12.5px;padding:3px 0;color:var(--steel-700)}
+  .bline.tot{border-top:1px solid var(--line);margin-top:6px;padding-top:8px;
+    font-size:16px;font-weight:500;color:var(--steel-900)}
+  .bline .disc{color:var(--verd)}
+  .sfoot{padding:14px 20px;border-top:1px solid var(--line);display:flex;gap:10px}
+  .sfoot button{padding:9px 18px;font-size:13px;font-weight:600}
+  .ghost{background:none;border:1px solid var(--line);color:var(--steel-500)}
+  .send{background:var(--safety);color:var(--steel-900);margin-left:auto}
+  .send:hover{background:#ffd83d}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+    background:var(--steel-900);color:#fff;padding:12px 22px;
+    font-family:'JetBrains Mono',monospace;font-size:13px;z-index:60;
+    border-left:3px solid var(--verd);opacity:0;transition:opacity .2s;pointer-events:none}
+  .toast.on{opacity:1}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap hbar">
+    <div class="mark">APIC <span>ProtoHub</span></div>
+    <div class="console-tag">MANAGER CONSOLE</div>
+    <div style="margin-left:16px;display:flex;gap:10px;align-items:center">
+      <a href="app.html" style="color:var(--safety);font-family:'JetBrains Mono',monospace;font-size:12px;text-decoration:none;border:1px solid var(--safety);padding:4px 10px;border-radius:2px;font-weight:600">➔ INNOVATOR PORTAL</a>
+      <button onclick="resetData()" style="background:transparent;border:1px solid var(--steel-500);color:var(--steel-300);font-family:'JetBrains Mono',monospace;font-size:11px;padding:4px 8px;cursor:pointer">RESET DEMO</button>
+    </div>
+    <div class="whoami"><b>K. Prasad</b><br>APIC Visakhapatnam · Manager</div>
+  </div>
+</header>
+
+<div class="stats">
+  <div class="wrap"><div class="statrow" id="stats"></div></div>
+</div>
+
+<div class="wrap">
+  <div class="grid">
+    <div>
+      <div class="colhead">
+        <h2>Job queue</h2>
+        <div class="n" id="qcount"></div>
+      </div>
+      <div id="queue"></div>
+    </div>
+
+    <div>
+      <div class="colhead"><h2>Material stock</h2></div>
+      <div class="panel">
+        <h3 id="stockhead">On hand</h3>
+        <div id="stock"></div>
+      </div>
+      <div class="panel">
+        <h3>Machines</h3>
+        <div id="machines"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   Mirrors the Postgres backend exactly:
+   - issue_quote()  → pricing logic below
+   - advance_job()  → STATES transition map + stock consume
+   - v_manager_queue / v_centre_today / v_material_alerts
+   - Shared cross-tab state synchronization via localStorage
+   ============================================================ */
+
+const STORAGE_KEY = 'APIC_PROTOHUB_STATE_V1';
+
+const MATLABEL = {pla:'PLA',abs:'ABS',petg:'PETG',nylon_pa12:'Nylon PA12',
+  resin_std:'Resin',al_6061:'Aluminium 6061',acrylic:'Acrylic',mdf:'MDF',fr4:'FR4'};
+
+// Comprehensive rate card covering all APIC centres
+const MACHINE = {
+  'Ultimaker S5':       {rate:350,  setup:100, min:200,  disc:50},
+  'Formlabs Form 3L':   {rate:600,  setup:150, min:400,  disc:40},
+  'Haas Mini Mill':     {rate:1200, setup:500, min:1000, disc:30},
+  'Trotec Speedy 400':  {rate:450,  setup:100, min:250,  disc:40},
+  'Creality K1 Max':    {rate:250,  setup:50,  min:150,  disc:50},
+  'Prusa MK4':          {rate:200,  setup:50,  min:150,  disc:50},
+  'LPKF ProtoMat S104': {rate:800,  setup:200, min:500,  disc:40},
+  'EOS P 396':          {rate:2500, setup:800, min:2000, disc:25},
+  'Ultimaker S3':       {rate:300,  setup:100, min:200,  disc:50},
+  'Creality Ender-3 V3':{rate:150,  setup:50,  min:100,  disc:50},
+  'GCC LaserPro C180':  {rate:350,  setup:100, min:200,  disc:40},
+  'Bambu Lab X1 Carbon':{rate:300,  setup:100, min:200,  disc:50}
+};
+
+const MATCOST = {
+  pla:2.5, abs:3.0, petg:3.2, nylon_pa12:6.5,
+  resin_std:8.0, al_6061:1.2, acrylic:0.9, mdf:0.4, fr4:4.5
+};
+
+function getFutureDay(n) {
+  const d = new Date();
+  d.setDate(d.getDate() + n);
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function getDefaultState() {
+  return {
+    jobs: [
+      {
+        id: 1, title: 'Drone arm bracket', status: 'ready', machine: 'Ultimaker S5', centreId: 1,
+        innovator: 'Ravi Teja', affiliation: 'student', phone: '+919000000001',
+        material: 'pla', qty: 4, quote: 575.00,
+        quoteDetails: { min: 90, grams: 85, machcost: 525, matcost: 212.5, setup: 100, disc: 262.5, total: 575 },
+        slot: { day: getFutureDay(1), from: 10, to: 12 },
+        history: [
+          { status: 'quote_pending', time: '3 days ago', note: 'Job submitted by innovator' },
+          { status: 'quote_sent', time: '2 days ago', note: 'Quote v1 issued: ₹575.00' },
+          { status: 'quote_accepted', time: '2 days ago', note: 'Innovator accepted quote' },
+          { status: 'queued', time: '1 day ago', note: 'Scheduled for production' },
+          { status: 'setup', time: '6 hours ago', note: 'Loaded PLA spool' },
+          { status: 'running', time: '5 hours ago', note: 'Print started' },
+          { status: 'qc', time: '2 hours ago', note: 'Print completed, dimensional inspection' },
+          { status: 'ready', time: '1 hour ago', note: 'Passed QC inspection. Placed on pickup shelf.' }
+        ]
+      },
+      {
+        id: 2, title: 'Micro-fluidic test chip', status: 'quote_sent', machine: 'Formlabs Form 3L', centreId: 1,
+        innovator: 'Sneha Reddy', affiliation: 'startup', phone: '+919000000002',
+        material: 'resin_std', qty: 2, quote: 1140.00,
+        quoteDetails: { min: 75, grams: 30, machcost: 750, matcost: 240, setup: 150, disc: 0, total: 1140 },
+        slot: { day: getFutureDay(1), from: 14, to: 15 },
+        history: [
+          { status: 'quote_pending', time: '1 day ago', note: 'Job submitted by innovator' },
+          { status: 'quote_sent', time: '12 hours ago', note: 'Quote v1 issued: ₹1140.00' }
+        ]
+      },
+      {
+        id: 3, title: 'Sensor housing', status: 'quote_pending', machine: 'Ultimaker S5', centreId: 1,
+        innovator: 'Ravi Teja', affiliation: 'student', phone: '+919000000001',
+        material: 'pla', qty: 1, quote: null,
+        slot: { day: getFutureDay(2), from: 11, to: 12 },
+        history: [
+          { status: 'quote_pending', time: '2 hours ago', note: 'Job submitted by innovator' }
+        ]
+      },
+      {
+        id: 4, title: 'Jig plate', status: 'running', machine: 'Haas Mini Mill', centreId: 1,
+        innovator: 'Sneha Reddy', affiliation: 'startup', phone: '+919000000002',
+        material: 'al_6061', qty: 1, quote: 2600.00,
+        quoteDetails: { min: 90, grams: 250, machcost: 1800, matcost: 300, setup: 500, disc: 0, total: 2600 },
+        slot: { day: getFutureDay(0), from: 9, to: 11 },
+        history: [
+          { status: 'quote_pending', time: '2 days ago', note: 'Job submitted by innovator' },
+          { status: 'quote_sent', time: '1 day ago', note: 'Quote v1 issued: ₹2600.00' },
+          { status: 'quote_accepted', time: '1 day ago', note: 'Innovator accepted quote' },
+          { status: 'queued', time: '18 hours ago', note: 'Placed in milling queue' },
+          { status: 'setup', time: '3 hours ago', note: 'Stock clamped, tools calibrated' },
+          { status: 'running', time: '1 hour ago', note: 'CNC program cycle started' }
+        ]
+      },
+      {
+        id: 5, title: 'Gear prototype', status: 'quote_pending', machine: 'Ultimaker S5', centreId: 1,
+        innovator: 'Ravi Teja', affiliation: 'student', phone: '+919000000001',
+        material: 'pla', qty: 6, quote: null,
+        slot: { day: getFutureDay(3), from: 13, to: 15 },
+        history: [
+          { status: 'quote_pending', time: '30 minutes ago', note: 'Job submitted by innovator' }
+        ]
+      }
+    ],
+    // Inventory specifically for Visakhapatnam centre machines
+    stock: [
+      { machine: 'Ultimaker S5',     mat: 'pla',       have: 3915,  reorder: 500,  cap: 4000 },
+      { machine: 'Ultimaker S5',     mat: 'abs',       have: 2000,  reorder: 500,  cap: 2000 },
+      { machine: 'Formlabs Form 3L', mat: 'resin_std', have: 2970,  reorder: 500,  cap: 3000 },
+      { machine: 'Haas Mini Mill',   mat: 'al_6061',   have: 24750, reorder: 5000, cap: 25000 },
+      { machine: 'Trotec Speedy 400',mat: 'acrylic',   have: 12000, reorder: 2000, cap: 12000 },
+      { machine: 'Trotec Speedy 400',mat: 'mdf',       have: 20000, reorder: 3000, cap: 20000 }
+    ],
+    machineStatus: [
+      { name: 'Ultimaker S5',     status: 'available' },
+      { name: 'Formlabs Form 3L', status: 'available' },
+      { name: 'Haas Mini Mill',   status: 'in_use' },
+      { name: 'Trotec Speedy 400',status: 'maintenance' }
+    ],
+    bookings: [
+      { m: 1, day: getFutureDay(1), from: 10, to: 12, status: 'confirmed' },
+      { m: 1, day: getFutureDay(1), from: 14, to: 15, status: 'confirmed' }
+    ]
+  };
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) {
+      const parsed = JSON.parse(raw);
+      if(parsed && Array.isArray(parsed.jobs) && Array.isArray(parsed.stock)) {
+        return parsed;
+      }
+    }
+  } catch(e) {
+    console.warn('Error reading localStorage:', e);
+  }
+  const init = getDefaultState();
+  saveState(init);
+  return init;
+}
+
+function saveState(s) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
+  } catch(e) {
+    console.warn('Error saving to localStorage:', e);
+  }
+  window.dispatchEvent(new CustomEvent('apic_state_update'));
+}
+
+let STATE = loadState();
+let JOBS = STATE.jobs;
+let STOCK = STATE.stock;
+let MACHINE_STATUS = STATE.machineStatus;
+
+window.addEventListener('storage', e => {
+  if(e.key === STORAGE_KEY) {
+    STATE = loadState();
+    JOBS = STATE.jobs;
+    STOCK = STATE.stock;
+    MACHINE_STATUS = STATE.machineStatus;
+    renderAll();
+  }
+});
+
+window.addEventListener('apic_state_update', () => {
+  JOBS = STATE.jobs;
+  STOCK = STATE.stock;
+  MACHINE_STATUS = STATE.machineStatus;
+  renderAll();
+});
+
+// State machine — strictly enforces valid state flow matching advance_job()
+const NEXT = {
+  quote_accepted: { to: 'queued', label: 'Add to queue', prime: true },
+  queued:         { to: 'setup', label: 'Start setup', prime: true },
+  setup:          { to: 'running', label: 'Begin run', prime: true },
+  running:        { to: 'qc', label: 'Move to QC' },
+  qc:             { to: 'ready', label: 'Pass QC' },
+  ready:          { to: 'collected', label: 'Mark collected' }
+};
+
+const PRIORITY = s =>
+  s === 'quote_pending' ? 0 :
+  s === 'quote_accepted' ? 1 :
+  ['setup','running','qc'].includes(s) ? 2 :
+  s === 'queued' ? 3 : 4;
+
+const CLASS = s =>
+  s === 'quote_pending' || s === 'quote_accepted' || s === 'queued' ? 'act' :
+  ['setup','running','qc'].includes(s) ? 'run' : 'wait';
+
+const STLABEL = {
+  draft: 'Draft',
+  quote_pending: 'Needs quote',
+  quote_sent: 'Quote sent',
+  quote_accepted: 'Quote accepted',
+  queued: 'Queued',
+  setup: 'In setup',
+  running: 'Running',
+  qc: 'In QC',
+  ready: 'Ready for pickup',
+  collected: 'Collected',
+  failed: 'Failed',
+  cancelled: 'Cancelled'
+};
+
+/* ---- quote engine: faithful port of issue_quote() ---- */
+function computeQuote(job, minutes, grams){
+  const m = MACHINE[job.machine] || {rate:300, setup:100, min:200, disc:0};
+  const machcost = Math.round(m.rate * minutes / 60 * 100) / 100;
+  const matcost = (grams && MATCOST[job.material])
+    ? Math.round(MATCOST[job.material] * grams * 100) / 100 : 0;
+  const disc = job.affiliation === 'student'
+    ? Math.round(machcost * m.disc / 100 * 100) / 100 : 0;
+  const total = Math.max(machcost + matcost + m.setup - disc, m.min);
+  return { machcost, matcost, setup: m.setup, disc, total, min: minutes, grams };
+}
+
+/* ---- render ---- */
+function renderStats(){
+  const aq = JOBS.filter(j => j.status === 'quote_pending').length;
+  const active = JOBS.filter(j => ['quote_accepted','queued','setup','running','qc'].includes(j.status)).length;
+  const ready = JOBS.filter(j => j.status === 'ready').length;
+  const up = MACHINE_STATUS.filter(m => m.status === 'available').length;
+  const down = MACHINE_STATUS.filter(m => ['maintenance','broken'].includes(m.status)).length;
+  const low = STOCK.filter(s => s.have <= s.reorder).length;
+  document.getElementById('stats').innerHTML = [
+    ['awaiting quote', aq, aq ? 'alert' : ''],
+    ['active jobs', active, ''],
+    ['ready for pickup', ready, ''],
+    ['machines up', up, ''],
+    ['machines down', down, down ? 'down' : ''],
+    ['low stock', low, low ? 'alert' : '']
+  ].map(([l,v,c]) => `<div class="stat ${c}"><b>${v}</b><span>${l}</span></div>`).join('');
+}
+
+function renderQueue(){
+  const active = JOBS.filter(j => !['collected','cancelled','failed','draft'].includes(j.status))
+    .sort((a,b) => PRIORITY(a.status) - PRIORITY(b.status) || a.id - b.id);
+  document.getElementById('qcount').textContent =
+    active.length + ' OPEN · ' + JOBS.filter(j => j.status === 'quote_pending').length + ' NEED QUOTES';
+  document.getElementById('queue').innerHTML = active.map(j => {
+    const cls = CLASS(j.status);
+    let action;
+    if(j.status === 'quote_pending'){
+      action = `<button class="act-btn prime" onclick="openQuote(${j.id})">Price this job</button>`;
+    } else if(j.status === 'quote_sent'){
+      action = `
+        <div class="wait-note" style="margin-bottom:4px">Awaiting innovator</div>
+        <button class="act-btn" style="background:var(--verd);font-size:11px;padding:4px 8px"
+                title="Customer phoned approval or test acceptance"
+                onclick="acceptQuote(${j.id})">Accept for client</button>`;
+    } else if(NEXT[j.status]){
+      const n = NEXT[j.status];
+      const fail = ['setup','running','qc'].includes(j.status)
+        ? `<button class="act-btn warn" onclick="failJob(${j.id})">Fail</button>` : '';
+      action = `<div class="btnrow">${fail}<button class="act-btn ${n.prime?'prime':''}"
+        onclick="advance(${j.id})">${n.label}</button></div>`;
+    } else {
+      action = `<div class="wait-note">—</div>`;
+    }
+
+    const slotText = j.slot ? `${j.slot.day} ${j.slot.from}:00–${j.slot.to}:00` : '';
+
+    return `<div class="job ${cls}">
+      <div class="jid">JOB<b>${String(j.id).padStart(3,'0')}</b></div>
+      <div>
+        <div class="jtitle">${j.title}</div>
+        <div class="jmeta">${j.innovator} · ${j.machine} · ×${j.qty || 1}${slotText ? ' · ' + slotText : ''}</div>
+        <div class="jtags">
+          <span class="tag">${j.affiliation || 'innovator'}</span>
+          <span class="tag">${MATLABEL[j.material] || j.material}</span>
+          ${j.quote ? `<span class="tag q">₹${Number(j.quote).toFixed(2)}</span>` : ''}
+        </div>
+      </div>
+      <div class="jright">
+        <div class="status-lbl">${STLABEL[j.status] || j.status}</div>
+        ${action}
+      </div>
+    </div>`;
+  }).join('') || `<div class="empty"><b>Queue clear</b>Nothing needs attention right now.</div>`;
+}
+
+function renderStock(){
+  const low = STOCK.filter(s => s.have <= s.reorder).length;
+  document.getElementById('stockhead').textContent = low ? `On hand · ${low} low` : 'On hand';
+  document.getElementById('stockhead').className = low ? 'warn' : '';
+  document.getElementById('stock').innerHTML = STOCK.map((s,i) => {
+    const pct = Math.min(100, Math.round(s.have / s.cap * 100));
+    const isLow = s.have <= s.reorder;
+    return `<div class="stock">
+      <div class="bar">
+        <div class="sname">${MATLABEL[s.mat] || s.mat}</div>
+        <div class="smeta">${s.machine} · ${Math.round(s.have)}g${isLow ? ' · below ' + s.reorder + 'g' : ''}</div>
+        <div class="meter"><i class="${isLow ? 'low' : ''}" style="width:${pct}%"></i></div>
+      </div>
+      <button class="restock" onclick="restock(${i})">+ Stock</button>
+    </div>`;
+  }).join('');
+}
+
+function renderMachines(){
+  const dot = {
+    available: 'var(--verd)',
+    in_use: 'var(--safety)',
+    maintenance: 'var(--oxide)',
+    broken: 'var(--oxide)'
+  };
+  document.getElementById('machines').innerHTML = MACHINE_STATUS.map(m => `
+    <div class="stock">
+      <div class="bar">
+        <div class="sname">${m.name}</div>
+        <div class="smeta" style="color:${dot[m.status]}">● ${m.status.replace('_',' ')}</div>
+      </div>
+    </div>`).join('');
+}
+
+function renderAll(){
+  renderStats();
+  renderQueue();
+  renderStock();
+  renderMachines();
+}
+
+/* ---- actions ---- */
+let QJOB = null;
+function openQuote(id){
+  QJOB = JOBS.find(j => j.id === id);
+  const draftMin = (QJOB.quoteDetails && QJOB.quoteDetails.min) || 60;
+  const draftG = (QJOB.quoteDetails && QJOB.quoteDetails.grams) || 50;
+  
+  document.getElementById('sheet').innerHTML = `
+    <div class="shead">
+      <h3>Price JOB${String(id).padStart(3,'0')} — ${QJOB.title}</h3>
+      <p>${QJOB.innovator} · ${QJOB.machine} · ${MATLABEL[QJOB.material] || QJOB.material} · qty ${QJOB.qty || 1}</p>
+    </div>
+    <div class="sbody">
+      <div class="row2">
+        <div class="field"><label>Machine time (min)</label>
+          <input id="q_min" type="number" value="${draftMin}" min="1" oninput="updateQuote()"></div>
+        <div class="field"><label>Material (grams)</label>
+          <input id="q_g" type="number" value="${draftG}" min="0" oninput="updateQuote()"></div>
+      </div>
+      <div class="breakdown" id="bd"></div>
+      <p style="font-size:11.5px;color:var(--steel-500);margin-top:10px">
+        Quote is saved as v1 (manual). Every manual quote trains the auto-pricing engine.</p>
+    </div>
+    <div class="sfoot">
+      <button class="ghost" onclick="closeM()">Cancel</button>
+      <button class="send" onclick="sendQuote()">Send quote</button>
+    </div>`;
+  updateQuote();
+  document.getElementById('modal').classList.add('on');
+}
+
+function updateQuote(){
+  const min = +document.getElementById('q_min').value || 0;
+  const g = +document.getElementById('q_g').value || 0;
+  const q = computeQuote(QJOB, min, g);
+  document.getElementById('bd').innerHTML = `
+    <div class="bline"><span>Machine time (${min}min)</span><span>₹${q.machcost.toFixed(2)}</span></div>
+    <div class="bline"><span>Material (${g}g ${MATLABEL[QJOB.material] || QJOB.material})</span><span>₹${q.matcost.toFixed(2)}</span></div>
+    <div class="bline"><span>Setup</span><span>₹${q.setup.toFixed(2)}</span></div>
+    ${q.disc ? `<div class="bline"><span class="disc">Student discount</span><span class="disc">−₹${q.disc.toFixed(2)}</span></div>` : ''}
+    <div class="bline tot"><span>Total</span><span>₹${q.total.toFixed(2)}</span></div>`;
+}
+
+function sendQuote(){
+  const min = +document.getElementById('q_min').value || 0;
+  const g = +document.getElementById('q_g').value || 0;
+  const q = computeQuote(QJOB, min, g);
+  QJOB.quote = q.total;
+  QJOB.quoteDetails = q;
+  QJOB.status = 'quote_sent';
+  if(!QJOB.history) QJOB.history = [];
+  QJOB.history.push({
+    status: 'quote_sent',
+    time: 'Just now',
+    note: `Quote issued: ₹${q.total.toFixed(2)} (${min} min, ${g}g)`
+  });
+  saveState(STATE);
+  closeM();
+  renderAll();
+  toast(`Quote ₹${q.total.toFixed(2)} sent to ${QJOB.innovator}`);
+}
+
+function acceptQuote(id){
+  const j = JOBS.find(x => x.id === id);
+  if(!j || j.status !== 'quote_sent') return;
+  j.status = 'quote_accepted';
+  if(!j.history) j.history = [];
+  j.history.push({
+    status: 'quote_accepted',
+    time: 'Just now',
+    note: 'Quote accepted (recorded by manager)'
+  });
+  saveState(STATE);
+  renderAll();
+  toast(`JOB${String(id).padStart(3,'0')} accepted! Ready to queue.`);
+}
+
+function advance(id){
+  const j = JOBS.find(x => x.id === id);
+  const n = NEXT[j.status];
+  if(!n) return;
+  
+  // consume stock when run begins (mirrors advance_job on 'running')
+  if(n.to === 'running'){
+    const s = STOCK.find(s => s.machine === j.machine && s.mat === j.material);
+    if(s){
+      const gramsUsed = (j.quoteDetails && j.quoteDetails.grams) ? j.quoteDetails.grams : 60;
+      s.have = Math.max(0, s.have - gramsUsed);
+    }
+  }
+  j.status = n.to;
+  if(!j.history) j.history = [];
+  j.history.push({
+    status: n.to,
+    time: 'Just now',
+    note: `Advanced to ${STLABEL[n.to] || n.to}`
+  });
+  saveState(STATE);
+  renderAll();
+  toast(`JOB${String(id).padStart(3,'0')} → ${STLABEL[n.to] || n.to}`);
+}
+
+function failJob(id){
+  const j = JOBS.find(x => x.id === id);
+  j.status = 'failed';
+  if(!j.history) j.history = [];
+  j.history.push({
+    status: 'failed',
+    time: 'Just now',
+    note: 'Marked failed during run/inspection'
+  });
+  saveState(STATE);
+  renderAll();
+  toast(`JOB${String(id).padStart(3,'0')} marked failed`);
+}
+
+function restock(i){
+  STOCK[i].have = STOCK[i].cap;
+  saveState(STATE);
+  renderAll();
+  toast(`${MATLABEL[STOCK[i].mat] || STOCK[i].mat} restocked to ${STOCK[i].cap}g`);
+}
+
+function resetData(){
+  if(!confirm('Reset demo state to initial seed data?')) return;
+  STATE = getDefaultState();
+  saveState(STATE);
+  JOBS = STATE.jobs;
+  STOCK = STATE.stock;
+  MACHINE_STATUS = STATE.machineStatus;
+  renderAll();
+  toast('Demo state reset to initial seed data');
+}
+
+function closeM(){
+  document.getElementById('modal').classList.remove('on');
+}
+document.getElementById('modal').addEventListener('click', e => {
+  if(e.target.id === 'modal') closeM();
+});
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape') closeM();
+});
+
+let tT;
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('on');
+  clearTimeout(tT);
+  tT = setTimeout(() => t.classList.remove('on'), 2600);
+}
+
+renderAll();
+</script>
+</body>
+</html>

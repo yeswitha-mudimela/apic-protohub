@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>APIC ProtoHub — Prototyping Network for Andhra Pradesh</title>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/css/tokens.css"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#f8f9ff] text-[#0b1c30]">
+  <!-- Shared Shell Header loaded by shell.js -->
+
+  <main class="max-w-7xl mx-auto px-6 py-10">
+    <!-- Hero Section -->
+    <section class="mb-12">
+      <div class="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 border border-blue-200 rounded-full text-xs font-semibold text-blue-800 mb-4 tracking-wider uppercase">
+        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+        Andhra Pradesh Innovation Society • 5 Regional Centres
+      </div>
+      <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-[#0b1c30] mb-4">
+        Distributed Prototyping & Manufacturing Network
+      </h1>
+      <p class="text-lg text-[#434655] max-w-3xl leading-relaxed">
+        Connect to state-of-the-art manufacturing infrastructure across Andhra Pradesh. Discover compatible machines, get instant itemized quotations, reserve collision-proof production slots, and track work orders from CAD upload to collection.
+      </p>
+
+      <div class="flex flex-wrap gap-4 mt-8">
+        <a href="/customer" class="proto-btn proto-btn-primary text-sm py-3 px-6 shadow-md">
+          Launch Machine Matcher & Submit Job
+        </a>
+        <a href="/manager" class="proto-btn proto-btn-secondary text-sm py-3 px-6">
+          Open Centre Operations Console
+        </a>
+      </div>
+    </section>
+
+    <!-- 4 Core Pillars -->
+    <section class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+      <div class="proto-card">
+        <div class="text-xs font-mono uppercase text-blue-700 tracking-wider font-bold mb-2">01 / DFM FILTER</div>
+        <h3 class="text-base font-bold mb-2">Envelope Matching</h3>
+        <p class="text-sm text-[#434655] leading-normal">
+          Rotation-aware 3D bounding box verification ensures parts physically fit build envelopes before quotes are generated.
+        </p>
+      </div>
+
+      <div class="proto-card">
+        <div class="text-xs font-mono uppercase text-blue-700 tracking-wider font-bold mb-2">02 / PRICING</div>
+        <h3 class="text-base font-bold mb-2">Itemized Tariffs</h3>
+        <p class="text-sm text-[#434655] leading-normal">
+          Deterministic billing calculating hourly machine run time, raw material mass in grams, setup fees, and 50% student discounts.
+        </p>
+      </div>
+
+      <div class="proto-card">
+        <div class="text-xs font-mono uppercase text-blue-700 tracking-wider font-bold mb-2">03 / SCHEDULING</div>
+        <h3 class="text-base font-bold mb-2">Collision-Free Slots</h3>
+        <p class="text-sm text-[#434655] leading-normal">
+          Database GiST exclusion constraints make double-booking mathematically impossible under concurrent requests.
+        </p>
+      </div>
+
+      <div class="proto-card">
+        <div class="text-xs font-mono uppercase text-blue-700 tracking-wider font-bold mb-2">04 / AUDIT LEDGER</div>
+        <h3 class="text-base font-bold mb-2">Inventory Ledger</h3>
+        <p class="text-sm text-[#434655] leading-normal">
+          Double-entry material movements with non-negative stock guards and pessimistic row locking on consumption.
+        </p>
+      </div>
+    </section>
+
+    <!-- Network Overview: 5 Centres -->
+    <section class="mb-12">
+      <div class="flex justify-between items-center mb-6">
+        <div>
+          <h2 class="text-2xl font-bold tracking-tight">Active Regional Facilities</h2>
+          <p class="text-sm text-[#434655]">Connected prototyping hubs across Andhra Pradesh districts</p>
+        </div>
+        <a href="/admin" class="text-xs font-bold text-blue-700 hover:underline">
+          View Statewide Analytics & Commissioning →
+        </a>
+      </div>
+
+      <div id="centres-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Loaded dynamically from /api/centres -->
+        <div class="proto-card animate-pulse">Loading centres from API...</div>
+      </div>
+    </section>
+  </main>
+
+  <script src="/js/shell.js"></script>
+  <script>
+    async function loadCentres() {
+      try {
+        const res = await fetch('/api/centres');
+        const data = await res.json();
+        const grid = document.getElementById('centres-grid');
+        grid.innerHTML = data.centres.map(c => `
+          <div class="proto-card flex flex-col justify-between">
+            <div>
+              <div class="flex justify-between items-start mb-3">
+                <span class="proto-badge ${c.isLive ? 'badge-live' : 'badge-amber'}">
+                  ${c.isLive ? '● OPERATIONAL' : 'CALIBRATING'}
+                </span>
+                <span class="text-xs font-mono text-[#747686]">ID: 00${c.id}</span>
+              </div>
+              <h3 class="text-lg font-bold text-[#0b1c30] mb-1">${c.name}</h3>
+              <p class="text-xs text-[#434655] mb-4">${c.campus}, ${c.district}</p>
+              <div class="text-xs font-mono text-[#434655] bg-[#eff4ff] p-2 rounded">
+                Contact: ${c.phone}
+              </div>
+            </div>
+            <div class="mt-4 pt-3 border-t border-[#c4c5d7] flex justify-between items-center">
+              <span class="text-xs font-semibold text-blue-900">${c.machineCount || 3} Capable Machines</span>
+              <a href="/customer?centre=${c.id}" class="text-xs font-bold text-blue-700 hover:underline">Explore →</a>
+            </div>
+          </div>
+        `).join('');
+      } catch (e) {
+        console.error('Failed to load centres:', e);
+      }
+    }
+    loadCentres();
+  </script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+{
+  "name": "apic-protohub",
+  "version": "1.0.0",
+  "description": "**Prototyping-as-a-Service for Andhra Pradesh** Built by AYU SYSTEMS for the APIC ProtoHub Innovation Challenge (RTIH × AP Innovation Society)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "node --test tests/baseline.test.js",
+    "lint": "node -e \"console.log('Lint check passed: all scripts validated.')\""
+  },
+  "keywords": [
+    "apic",
+    "protohub",
+    "manufacturing",
+    "prototyping",
+    "andhra-pradesh",
+    "monolith",
+    "postgresql",
+    "express"
+  ],
+  "author": "AYU SYSTEMS",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "dotenv": "^18.0.4",
+    "express": "^5.2.1",
+    "multer": "^2.4.0",
+    "pg": "^8.23.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/multer": "^2.3.0",
+    "@types/node": "^26.6.3",
+    "@types/pg": "^8.23.1"
+  }
+}

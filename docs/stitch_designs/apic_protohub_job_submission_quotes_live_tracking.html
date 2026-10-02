@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>APIC ProtoHub - Job Submission &amp; Tracking</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Inter Google Font -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS with configuration -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-tertiary-fixed": "#00201d",
+            "tertiary-container": "#00685f",
+            "surface-bright": "#f8f9ff",
+            "surface-container-highest": "#d3e4fe",
+            "surface-container": "#e5eeff",
+            "surface-container-high": "#dce9ff",
+            "on-secondary-fixed": "#001a40",
+            "secondary": "#445e8f",
+            "inverse-on-surface": "#eaf1ff",
+            "on-primary-fixed-variant": "#0039b5",
+            "on-secondary-container": "#385282",
+            "tertiary": "#004e47",
+            "on-secondary-fixed-variant": "#2b4675",
+            "surface-container-low": "#eff4ff",
+            "background": "#f8f9ff",
+            "surface": "#f8f9ff",
+            "secondary-fixed": "#d7e2ff",
+            "on-surface-variant": "#434655",
+            "tertiary-fixed": "#89f5e7",
+            "secondary-fixed-dim": "#adc7fe",
+            "primary": "#0037b0",
+            "tertiary-fixed-dim": "#6bd8cb",
+            "on-primary": "#ffffff",
+            "outline": "#747686",
+            "primary-container": "#1d4ed8",
+            "inverse-primary": "#b7c4ff",
+            "on-secondary": "#ffffff",
+            "surface-dim": "#cbdbf5",
+            "on-error": "#ffffff",
+            "on-tertiary": "#ffffff",
+            "on-surface": "#0b1c30",
+            "on-primary-fixed": "#001551",
+            "error": "#ba1a1a",
+            "on-primary-container": "#cad3ff",
+            "on-error-container": "#93000a",
+            "primary-fixed": "#dce1ff",
+            "secondary-container": "#adc7fe",
+            "surface-tint": "#2151da",
+            "primary-fixed-dim": "#b7c4ff",
+            "on-tertiary-container": "#7be7d9",
+            "error-container": "#ffdad6",
+            "surface-variant": "#d3e4fe",
+            "inverse-surface": "#213145",
+            "outline-variant": "#c4c5d7",
+            "on-background": "#0b1c30",
+            "on-tertiary-fixed-variant": "#005049",
+            "surface-container-lowest": "#ffffff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-sm": "0.5rem",
+            "space-lg": "1.5rem",
+            "gutter": "1.5rem",
+            "margin": "2rem",
+            "space-xl": "2.5rem",
+            "space-xs": "0.25rem",
+            "margin-mobile": "1rem",
+            "gutter-mobile": "0.75rem",
+            "space-md": "1rem"
+          },
+          "fontFamily": {
+            "headline-sm": ["Inter"],
+            "headline-xl": ["Inter"],
+            "code-md": ["Inter"],
+            "display-lg-mobile": ["Inter"],
+            "headline-lg": ["Inter"],
+            "headline-md": ["Inter"],
+            "headline-xl-mobile": ["Inter"],
+            "label-sm": ["Inter"],
+            "body-md": ["Inter"],
+            "body-lg": ["Inter"],
+            "label-md": ["Inter"],
+            "body-sm": ["Inter"],
+            "display-lg": ["Inter"],
+            "mono": ["JetBrains Mono", "monospace"]
+          },
+          "fontSize": {
+            "headline-sm": ["18px", {"lineHeight": "26px", "fontWeight": "600"}],
+            "headline-xl": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+            "code-md": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+            "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+            "headline-lg": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+            "headline-md": ["22px", {"lineHeight": "30px", "letterSpacing": "-0.005em", "fontWeight": "600"}],
+            "headline-xl-mobile": ["26px", {"lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+            "label-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+            "body-md": ["14px", {"lineHeight": "22px", "fontWeight": "400"}],
+            "body-lg": ["16px", {"lineHeight": "26px", "fontWeight": "400"}],
+            "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "600"}],
+            "body-sm": ["13px", {"lineHeight": "20px", "fontWeight": "400"}],
+            "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      display: none;
+    }
+    .custom-scroll {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface antialiased font-body-md min-h-screen flex flex-col justify-between selection:bg-surface-container-highest">
+<!-- TOP APP BAR (Shared Components JSON Anchor) -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-gutter-mobile h-14 bg-surface-container-lowest dark:bg-inverse-surface border-b border-outline-variant/30">
+<div class="flex items-center gap-space-sm">
+<button aria-label="Return to Dashboard" class="w-9 h-9 flex items-center justify-center rounded text-on-surface-variant hover:bg-surface-container active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[20px]" data-icon="arrow_back">arrow_back</span>
+</button>
+<div>
+<div class="flex items-center gap-1.5">
+<span class="text-headline-sm font-headline-sm text-primary dark:text-inverse-primary tracking-tight">APIC ProtoHub</span>
+<span class="inline-flex items-center px-1.5 py-0.5 rounded bg-surface-container-low border border-outline-variant text-[10px] font-mono font-medium text-secondary">PROD-ENV</span>
+</div>
+<div class="text-[11px] font-medium text-on-surface-variant leading-none">Job Submission &amp; Tracking</div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<div class="flex items-center gap-1.5 px-2 py-1 rounded bg-[#F0FDFA] border border-[#CCFBF1] text-[#0F766E] text-[11px] font-mono">
+<span class="w-2 h-2 rounded-full bg-[#0D9488] animate-pulse"></span>
+<span class="material-symbols-outlined text-[14px]" data-icon="sensors">sensors</span>
+<span class="hidden sm:inline">AU-VZG-01</span>
+</div>
+<button aria-label="Menu" class="w-8 h-8 flex items-center justify-center rounded text-on-surface-variant hover:bg-surface-container active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[20px]" data-icon="menu">menu</span>
+</button>
+</div>
+</header>
+<!-- MAIN CANVAS -->
+<main class="w-full max-w-md mx-auto pt-16 pb-24 px-3 flex-1 flex flex-col gap-3">
+<!-- BREADCRUMB / STATUS RIBBON -->
+<section class="mt-1 bg-surface-container-lowest border border-outline-variant/40 rounded p-2.5 flex flex-col gap-1.5 shadow-[0_1px_2px_rgba(15,23,42,0.03)]">
+<div class="flex items-center justify-between text-[10px] font-mono text-outline uppercase tracking-wider">
+<span>SUBMISSION WIZARD / CAD DFM</span>
+<span class="font-semibold text-on-surface">ORDER #AP-2025-0842</span>
+</div>
+<div class="flex items-center justify-between pt-1 border-t border-outline-variant/20">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-[#D97706] animate-ping"></span>
+<span class="text-label-sm font-label-sm text-on-surface font-semibold">STATUS:</span>
+</div>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[#FFFBEB] border border-[#FEF3C7] text-[#B45309] text-[11px] font-mono font-bold tracking-tight">
+<span class="material-symbols-outlined text-[13px]" data-icon="precision_manufacturing">precision_manufacturing</span>
+          IN PRODUCTION (LAYER 64%)
+        </span>
+</div>
+</section>
+<!-- FORM PROGRESS STEPPER (4 CLEAR STAGES) -->
+<section class="bg-surface-container-lowest border border-outline-variant/40 rounded p-3">
+<div class="flex items-center justify-between relative">
+<!-- Connecting Line Base -->
+<div class="absolute top-3.5 left-4 right-4 h-0.5 bg-outline-variant/40 z-0"></div>
+<div class="absolute top-3.5 left-4 w-2/3 h-0.5 bg-primary-container z-0"></div>
+<!-- Step 1: CAD DFM (Completed) -->
+<div class="relative z-10 flex flex-col items-center">
+<div class="w-7 h-7 rounded-full bg-primary-container text-white flex items-center justify-center ring-2 ring-white text-[12px] font-bold shadow-sm">
+<span class="material-symbols-outlined text-[16px]" data-icon="check">check</span>
+</div>
+<span class="mt-1 text-[10px] font-semibold text-on-surface">CAD DFM</span>
+<span class="text-[9px] font-mono text-[#0F766E]">VERIFIED</span>
+</div>
+<!-- Step 2: Quote & Subsidy (Completed) -->
+<div class="relative z-10 flex flex-col items-center">
+<div class="w-7 h-7 rounded-full bg-primary-container text-white flex items-center justify-center ring-2 ring-white text-[12px] font-bold shadow-sm">
+<span class="material-symbols-outlined text-[16px]" data-icon="check">check</span>
+</div>
+<span class="mt-1 text-[10px] font-semibold text-on-surface">Tariff</span>
+<span class="text-[9px] font-mono text-[#0F766E]">APPROVED</span>
+</div>
+<!-- Step 3: Fabrication & Telemetry (Active) -->
+<div class="relative z-10 flex flex-col items-center">
+<div class="w-7 h-7 rounded-full bg-white border-2 border-primary-container text-primary-container flex items-center justify-center ring-4 ring-primary-container/15 text-[11px] font-bold animate-pulse">
+            3
+          </div>
+<span class="mt-1 text-[10px] font-bold text-primary-container">Fabrication</span>
+<span class="text-[9px] font-mono text-[#B45309] font-medium">RUNNING</span>
+</div>
+<!-- Step 4: Metrology & Collection (Pending) -->
+<div class="relative z-10 flex flex-col items-center">
+<div class="w-7 h-7 rounded-full bg-surface-container text-on-surface-variant/70 border border-outline-variant/60 flex items-center justify-center ring-2 ring-white text-[11px] font-semibold">
+            4
+          </div>
+<span class="mt-1 text-[10px] font-medium text-on-surface-variant">Metrology</span>
+<span class="text-[9px] font-mono text-outline">QUEUED</span>
+</div>
+</div>
+</section>
+<!-- SECTION 1: UPLOADED CAD FILE & AUTOMATED DFM VALIDATION -->
+<section class="bg-surface-container-lowest border border-outline-variant/50 rounded shadow-sm">
+<div class="p-3 border-b border-surface-container flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]" data-icon="folder_zip">folder_zip</span>
+<h2 class="text-label-md font-label-md text-on-surface uppercase tracking-wide">CAD Specification &amp; Auto-DFM</h2>
+</div>
+<span class="inline-flex items-center px-1.5 py-0.5 rounded bg-[#F0FDFA] border border-[#CCFBF1] text-[#0F766E] text-[10px] font-mono font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-[#0D9488] mr-1"></span>
+          SHA-256 PASS
+        </span>
+</div>
+<div class="p-3 space-y-3">
+<!-- File Header Block -->
+<div class="p-2.5 rounded bg-surface-container-low/60 border border-outline-variant/30 flex items-center justify-between">
+<div class="flex items-center gap-2.5 overflow-hidden">
+<div class="w-9 h-9 rounded bg-white border border-outline-variant/40 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary-container text-[20px]" data-icon="deployed_code">deployed_code</span>
+</div>
+<div class="truncate">
+<div class="text-[12px] font-mono font-semibold text-on-surface truncate">bracket_aerospace_mount_v3.step</div>
+<div class="text-[10px] text-on-surface-variant flex items-center gap-2">
+<span>24.8 MB</span>
+<span>â¢</span>
+<span>Uploaded 2h ago</span>
+</div>
+</div>
+</div>
+<button class="shrink-0 text-primary hover:text-primary-fixed-variant p-1 active:scale-95" title="Inspect Hash">
+<span class="material-symbols-outlined text-[18px]" data-icon="verified">verified</span>
+</button>
+</div>
+<!-- DFM Auto-Analysis Metrics Matrix -->
+<div class="border border-outline-variant/40 rounded overflow-hidden">
+<div class="bg-surface-container-low px-2.5 py-1.5 border-b border-outline-variant/30 flex justify-between items-center">
+<span class="text-[10px] font-mono font-semibold text-on-surface uppercase">Automated Geometry Diagnostics</span>
+<span class="text-[10px] font-mono text-outline">ISO/ASTM 52900</span>
+</div>
+<!-- Diagnostic Rows -->
+<div class="divide-y divide-outline-variant/20 text-[11px] font-mono">
+<!-- Metric 1 -->
+<div class="p-2 flex items-center justify-between bg-white">
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-[#0D9488]"></span>
+<span class="text-on-surface">Watertight Mesh</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-outline text-[10px]">Zero non-manifold</span>
+<span class="px-1.5 py-0.5 rounded bg-[#F0FDFA] text-[#0F766E] font-bold border border-[#CCFBF1] text-[10px]">PASS</span>
+</div>
+</div>
+<!-- Metric 2 -->
+<div class="p-2 flex items-center justify-between bg-surface-bright">
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-[#0D9488]"></span>
+<span class="text-on-surface">Min Wall Thickness</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-outline text-[10px]">1.4mm (Threshold 1.2mm)</span>
+<span class="px-1.5 py-0.5 rounded bg-[#F0FDFA] text-[#0F766E] font-bold border border-[#CCFBF1] text-[10px]">COMPLIANT</span>
+</div>
+</div>
+<!-- Metric 3 -->
+<div class="p-2 flex items-center justify-between bg-white">
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-[#0D9488]"></span>
+<span class="text-on-surface">Bounding Envelope</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-on-surface-variant font-medium">148Ã115Ã76 mm</span>
+<span class="px-1.5 py-0.5 rounded bg-surface-container text-primary font-bold border border-outline-variant/40 text-[10px]">DMU 50 OK</span>
+</div>
+</div>
+<!-- Metric 4 (Notice) -->
+<div class="p-2 flex items-start justify-between bg-[#FFFBEB]/40">
+<div class="flex items-start gap-1.5 pt-0.5">
+<span class="w-1.5 h-1.5 rounded-full bg-[#D97706] mt-1"></span>
+<div>
+<div class="text-[#B45309] font-medium">Overhang Angle Notice</div>
+<div class="text-[10px] text-on-surface-variant font-sans">2 internal overhangs require support tooling (+12 min cycle)</div>
+</div>
+</div>
+<span class="px-1.5 py-0.5 rounded bg-[#FEF3C7] text-[#B45309] font-bold border border-[#FEF3C7] text-[10px] shrink-0">ADVISORY</span>
+</div>
+</div>
+</div>
+<!-- CAD Card Action Buttons -->
+<div class="grid grid-cols-2 gap-2 pt-1">
+<button class="flex items-center justify-center gap-1.5 py-2 px-2.5 rounded border border-outline-variant/70 text-on-surface text-label-sm font-label-sm hover:bg-surface-container-low active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[16px] text-secondary" data-icon="file_upload">file_upload</span>
+            Replace CAD File
+          </button>
+<button class="flex items-center justify-center gap-1.5 py-2 px-2.5 rounded border border-outline-variant/70 text-on-surface text-label-sm font-label-sm hover:bg-surface-container-low active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[16px] text-primary" data-icon="picture_as_pdf">picture_as_pdf</span>
+            DFM Report (.PDF)
+          </button>
+</div>
+</div>
+</section>
+<!-- SECTION 2: LIVE FABRICATION STATUS & SHOPFLOOR TELEMETRY -->
+<section class="bg-surface-container-lowest border border-outline-variant/50 rounded shadow-sm relative overflow-hidden">
+<div class="p-3 border-b border-surface-container flex items-center justify-between bg-[#F8FAFC]">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container text-[20px]" data-icon="precision_manufacturing">precision_manufacturing</span>
+<div>
+<h2 class="text-label-md font-label-md text-on-surface uppercase tracking-wide">Live Fabrication &amp; Telemetry</h2>
+<div class="text-[10px] font-mono text-outline">DMG MORI DMU 50 â¢ Node AU-VZG-01</div>
+</div>
+</div>
+<span class="flex items-center gap-1 text-[11px] font-mono font-semibold text-[#0F766E] bg-[#F0FDFA] px-2 py-0.5 rounded border border-[#CCFBF1]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#0D9488] animate-ping"></span>
+          SPINDLE ACTIVE
+        </span>
+</div>
+<div class="p-3 space-y-3">
+<!-- Machine & Operator Info Plate -->
+<div class="grid grid-cols-2 gap-2 p-2 rounded bg-surface-container-low/40 border border-outline-variant/30 text-[11px]">
+<div>
+<span class="text-[10px] text-outline uppercase font-mono block">Station / Center</span>
+<span class="font-semibold text-on-surface">AU Visakhapatnam Hub</span>
+</div>
+<div>
+<span class="text-[10px] text-outline uppercase font-mono block">Assigned Machinist</span>
+<div class="flex items-center gap-1 font-semibold text-on-surface">
+<span class="material-symbols-outlined text-[13px] text-primary" data-icon="badge">badge</span>
+              Tech. Ramesh K. (L3)
+            </div>
+</div>
+</div>
+<!-- Progress Visualization Block -->
+<div class="p-2.5 rounded border border-outline-variant/30 bg-white">
+<div class="flex justify-between items-center text-[11px] mb-1">
+<span class="font-mono text-on-surface font-semibold">Op 3/5: Contouring Rough Pass</span>
+<span class="font-mono font-bold text-primary-container">64%</span>
+</div>
+<!-- Industrial Progress Bar -->
+<div class="w-full h-2.5 bg-surface-container-high rounded overflow-hidden p-0.5 border border-outline-variant/20">
+<div class="h-full bg-primary-container rounded transition-all duration-500 relative" style="width: 64%;">
+<div class="absolute inset-0 bg-white/20 animate-[pulse_2s_infinite]"></div>
+</div>
+</div>
+<div class="flex justify-between items-center text-[10px] font-mono text-outline mt-1.5">
+<span>Cycle: 03h 31m elapsed</span>
+<span class="text-on-surface font-semibold">ETA: Today, 16:45 IST</span>
+</div>
+</div>
+<!-- Shopfloor Telemetry Metrics Grid -->
+<div>
+<div class="text-[10px] font-mono uppercase text-outline mb-1.5 tracking-wider font-semibold">Real-Time CNC Telemetry Streams</div>
+<div class="grid grid-cols-2 gap-2">
+<!-- Metric 1: Spindle Speed -->
+<div class="p-2 rounded bg-[#F8FAFC] border border-outline-variant/30">
+<div class="text-[10px] font-mono text-outline uppercase">Spindle Speed</div>
+<div class="flex items-baseline justify-between mt-0.5">
+<span class="text-headline-sm font-mono font-bold text-on-surface">12,400</span>
+<span class="text-[10px] font-mono font-semibold px-1 py-0.2 rounded bg-surface-container text-secondary">RPM</span>
+</div>
+<div class="text-[9px] text-[#0F766E] font-mono mt-0.5">Target: 12.5k RPM (99.2%)</div>
+</div>
+<!-- Metric 2: Feed Rate -->
+<div class="p-2 rounded bg-[#F8FAFC] border border-outline-variant/30">
+<div class="text-[10px] font-mono text-outline uppercase">Feed Rate</div>
+<div class="flex items-baseline justify-between mt-0.5">
+<span class="text-headline-sm font-mono font-bold text-on-surface">850</span>
+<span class="text-[10px] font-mono font-semibold px-1 py-0.2 rounded bg-surface-container text-secondary">mm/min</span>
+</div>
+<div class="text-[9px] text-on-surface-variant font-mono mt-0.5">Axis Load: X:42% Y:39%</div>
+</div>
+<!-- Metric 3: Coolant Pressure -->
+<div class="p-2 rounded bg-[#F8FAFC] border border-outline-variant/30">
+<div class="text-[10px] font-mono text-outline uppercase">Coolant Pressure</div>
+<div class="flex items-baseline justify-between mt-0.5">
+<span class="text-headline-sm font-mono font-bold text-on-surface">40</span>
+<span class="text-[10px] font-mono font-semibold px-1 py-0.2 rounded bg-surface-container text-secondary">BAR</span>
+</div>
+<div class="text-[9px] text-[#0F766E] font-mono mt-0.5 flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-[#0D9488]"></span> Normal High Flow
+              </div>
+</div>
+<!-- Metric 4: Spindle Temperature -->
+<div class="p-2 rounded bg-[#F8FAFC] border border-outline-variant/30">
+<div class="text-[10px] font-mono text-outline uppercase">Spindle Temp</div>
+<div class="flex items-baseline justify-between mt-0.5">
+<span class="text-headline-sm font-mono font-bold text-on-surface">38.2</span>
+<span class="text-[10px] font-mono font-semibold px-1 py-0.2 rounded bg-surface-container text-secondary">Â°C</span>
+</div>
+<div class="text-[9px] text-[#0F766E] font-mono mt-0.5 flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-[#0D9488]"></span> Thermal Stable
+              </div>
+</div>
+</div>
+</div>
+<!-- Shopfloor Log / Production Notes -->
+<div class="p-2 rounded bg-surface-container-low/40 border border-outline-variant/30 text-[11px]">
+<div class="flex items-center gap-1 text-[10px] font-mono text-outline uppercase font-semibold mb-1">
+<span class="material-symbols-outlined text-[13px]" data-icon="notes">notes</span>
+            Technician Calibration Log
+          </div>
+<p class="text-on-surface-variant font-mono text-[11px] leading-snug">
+            "Setup verified with Renishaw touch probe. Zero datum offset set. First pass chip evacuation smooth."
+          </p>
+<div class="text-[9px] font-mono text-outline mt-1 text-right">â 13:42 IST | AU Centre Machining Cell</div>
+</div>
+</div>
+</section>
+<!-- SECTION 3: TRANSPARENT QUOTATION & INSTITUTIONAL SUBSIDY CARD -->
+<section class="bg-surface-container-lowest border border-outline-variant/50 rounded shadow-sm">
+<div class="p-3 border-b border-surface-container flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]" data-icon="receipt_long">receipt_long</span>
+<div>
+<h2 class="text-label-md font-label-md text-on-surface uppercase tracking-wide">Tariff &amp; Subsidy Breakdown</h2>
+<div class="text-[10px] font-mono text-outline">Quote: QT-2025-0914-v2</div>
+</div>
+</div>
+<span class="inline-flex items-center px-1.5 py-0.5 rounded bg-[#F0FDFA] border border-[#CCFBF1] text-[#0F766E] text-[10px] font-mono font-semibold">
+          SUBSIDY CREDITED
+        </span>
+</div>
+<div class="p-3 space-y-2.5">
+<!-- Scheme Callout Banner -->
+<div class="p-2 rounded bg-surface-container-low border border-primary/20 flex items-center justify-between">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary text-[16px]" data-icon="school">school</span>
+<span class="text-[11px] font-semibold text-primary">AP Innovation Mission Scheme</span>
+</div>
+<span class="text-[10px] font-mono font-bold text-primary uppercase">60% Subsidized</span>
+</div>
+<!-- Line Items Table -->
+<div class="border border-outline-variant/30 rounded divide-y divide-outline-variant/20 text-[11px] font-mono">
+<div class="p-2 flex justify-between items-center bg-white">
+<span class="text-on-surface">Machine Runtime (5.5 hrs @ â¹650/hr)</span>
+<span class="font-semibold text-on-surface">â¹3,575.00</span>
+</div>
+<div class="p-2 flex justify-between items-center bg-surface-bright">
+<span class="text-on-surface">Material: Al 6061-T6 Billet (1.8 kg cert.)</span>
+<span class="font-semibold text-on-surface">â¹1,120.00</span>
+</div>
+<div class="p-2 flex justify-between items-center bg-white">
+<span class="text-on-surface">5-Axis CAM Programming &amp; Fixturing</span>
+<span class="font-semibold text-on-surface">â¹850.00</span>
+</div>
+<div class="p-2 flex justify-between items-center bg-surface-bright">
+<span class="text-on-surface">Ultrasonic Deburring &amp; Anodizing</span>
+<span class="font-semibold text-on-surface">â¹450.00</span>
+</div>
+<!-- Gross Commercial Value -->
+<div class="p-2 flex justify-between items-center bg-surface-container-low font-semibold">
+<span class="text-on-surface">Gross Commercial Value</span>
+<span class="text-on-surface">â¹5,995.00</span>
+</div>
+<!-- Institutional Subsidy Line Item -->
+<div class="p-2 flex justify-between items-center bg-[#F0FDFA] text-[#0F766E] font-semibold">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="verified">verified</span>
+<span>Student Prototype Subsidy (60%)</span>
+</div>
+<span>-â¹3,597.00</span>
+</div>
+<!-- Total Net Payable -->
+<div class="p-2.5 flex justify-between items-center bg-white border-t-2 border-outline-variant">
+<div>
+<div class="text-[12px] font-sans font-bold text-on-surface">Total Net Paid</div>
+<div class="text-[9px] font-sans text-outline">Incl. of all Institutional Taxes &amp; GST</div>
+</div>
+<div class="text-right">
+<span class="text-[16px] font-mono font-bold text-primary">â¹2,398.00</span>
+<div class="text-[9px] font-mono text-[#0F766E]">TXN-UPI-984218 â¢ SETTLED</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 4: COLLECTION LOGISTICS & DISPATCH -->
+<section class="bg-surface-container-lowest border border-outline-variant/50 rounded shadow-sm p-3 space-y-2.5">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]" data-icon="local_shipping">local_shipping</span>
+<h2 class="text-label-md font-label-md text-on-surface uppercase tracking-wide">Next Action &amp; Collection Hub</h2>
+</div>
+<span class="text-[10px] font-mono text-outline">STAGE 4 READY</span>
+</div>
+<div class="p-2.5 rounded bg-surface-bright border border-outline-variant/30 space-y-2">
+<div class="flex items-start gap-2">
+<span class="material-symbols-outlined text-primary mt-0.5 text-[18px]" data-icon="domain">domain</span>
+<div>
+<div class="text-[11px] font-bold text-on-surface">AU Engineering Hardware Hub</div>
+<div class="text-[10px] text-on-surface-variant font-mono">Visakhapatnam â¢ Bay 3 (Metrology Room)</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-2 pt-1 border-t border-outline-variant/20 text-[10px] font-mono">
+<div>
+<span class="text-outline uppercase block">Pickup Window</span>
+<span class="font-semibold text-on-surface">Tomorrow, 10:00 - 17:00</span>
+</div>
+<div>
+<span class="text-outline uppercase block">Dispatch Alternative</span>
+<span class="font-semibold text-primary">Campus Courier (AP Post)</span>
+</div>
+</div>
+</div>
+<!-- Quick Action Utility Row -->
+<div class="grid grid-cols-2 gap-2 pt-1">
+<button class="flex items-center justify-center gap-1.5 py-2 px-2 rounded bg-surface-container-low border border-outline-variant/60 text-on-surface text-[12px] font-medium hover:bg-surface-container active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[16px] text-primary" data-icon="terminal">terminal</span>
+          Raw Telemetry Log
+        </button>
+<button class="flex items-center justify-center gap-1.5 py-2 px-2 rounded bg-surface-container-low border border-outline-variant/60 text-on-surface text-[12px] font-medium hover:bg-surface-container active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[16px] text-[#0F766E]" data-icon="support_agent">support_agent</span>
+          Contact Centre Tech
+        </button>
+</div>
+</section>
+</main>
+<!-- DOCKED BOTTOM NAVIGATION (Shared Components JSON Anchor) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-gutter-mobile py-2 bg-surface-container-lowest dark:bg-inverse-surface border-t border-outline-variant/30">
+<!-- Item 1: Centres (Inactive) -->
+<a aria-label="Centres" class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant py-1 hover:bg-surface-container-low dark:hover:bg-surface-dim active:scale-95 transition-transform duration-100" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="precision_manufacturing">precision_manufacturing</span>
+<span class="text-label-sm font-label-sm mt-0.5">Centres</span>
+</a>
+<!-- Item 2: Submit Job (ACTIVE STATE: Primary user wizard flow) -->
+<a aria-label="Submit Job" class="flex flex-col items-center justify-center text-primary dark:text-inverse-primary font-semibold py-1 active:scale-95 transition-transform duration-100" href="#">
+<div class="relative">
+<span class="material-symbols-outlined text-[22px]" data-icon="add_circle" data-weight="fill" style="font-variation-settings: 'FILL' 1;">add_circle</span>
+</div>
+<span class="text-label-sm font-label-sm mt-0.5">Submit Job</span>
+</a>
+<!-- Item 3: Telemetry (Inactive) -->
+<a aria-label="Telemetry" class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant py-1 hover:bg-surface-container-low dark:hover:bg-surface-dim active:scale-95 transition-transform duration-100" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="monitoring">monitoring</span>
+<span class="text-label-sm font-label-sm mt-0.5">Telemetry</span>
+</a>
+<!-- Item 4: Profile (Inactive) -->
+<a aria-label="Profile" class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant py-1 hover:bg-surface-container-low dark:hover:bg-surface-dim active:scale-95 transition-transform duration-100" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="account_circle">account_circle</span>
+<span class="text-label-sm font-label-sm mt-0.5">Profile</span>
+</a>
+</nav>
+<script>
+    // Lightweight micro-interaction: Subtle real-time oscillation of telemetry figures
+    setInterval(() => {
+      const spindleSpeedEl = document.querySelector('.font-bold.text-on-surface');
+      if (spindleSpeedEl && spindleSpeedEl.textContent.trim() === '12,400') {
+        const jitter = Math.floor(Math.random() * 25) - 12;
+        spindleSpeedEl.textContent = (12400 + jitter).toLocaleString();
+      }
+    }, 2800);
+  </script>
+</body></html>

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Customer Hub — Guided Matching & Work Orders | APIC ProtoHub</title>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/css/tokens.css"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#f8f9ff] text-[#0b1c30]">
+  <!-- Shell Navigation injected by shell.js -->
+
+  <main class="max-w-7xl mx-auto px-6 py-8">
+    <div class="mb-8 flex justify-between items-end">
+      <div>
+        <div class="text-xs font-mono font-bold text-blue-700 tracking-wider uppercase mb-1">CUSTOMER INNOVATOR HUB</div>
+        <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight">Part Profile & Guided Machine Matching</h1>
+        <p class="text-sm text-[#434655]">Enter your part envelope and specifications to discover compatible equipment across Andhra Pradesh.</p>
+      </div>
+      <div class="flex gap-2">
+        <a href="#active-jobs" class="proto-btn proto-btn-secondary text-xs">View My Jobs</a>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <!-- Left Column: Part Profile Form -->
+      <div class="lg:col-span-5">
+        <div class="proto-card">
+          <h2 class="text-base font-bold mb-4 pb-2 border-b border-[#c4c5d7] flex items-center justify-between">
+            <span>1. Part Requirements Profile</span>
+            <span class="text-xs font-mono text-[#747686]">DFM STEP 1</span>
+          </h2>
+
+          <form id="matcher-form" class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-[#434655] mb-1">Fabrication Process</label>
+              <select id="match-process" class="w-full text-sm p-2.5 bg-white border border-[#c4c5d7] rounded focus:ring-2 focus:ring-blue-600 focus:outline-none">
+                <option value="">Any Compatible Process</option>
+                <option value="fdm">FDM 3D Printing (Fused Deposition)</option>
+                <option value="sla">SLA / Resin (Fine Detail)</option>
+                <option value="cnc_mill">3-Axis CNC Milling (Metals & Plastics)</option>
+                <option value="laser_cut">CO2 Laser Cutting & Engraving</option>
+                <option value="sls">SLS Nylon Additive</option>
+                <option value="pcb">PCB Prototyping</option>
+              </select>
+            </div>
+
+            <!-- Bounding Dimensions Matrix -->
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-[#434655] mb-1">Part Bounding Box (X × Y × Z mm)</label>
+              <div class="grid grid-cols-3 gap-2">
+                <div class="relative">
+                  <input id="dim-x" type="number" value="120" min="1" max="1000" class="w-full text-sm p-2 bg-white border border-[#c4c5d7] rounded font-mono pr-8" placeholder="X"/>
+                  <span class="absolute right-2 top-2 text-xs text-gray-400 font-mono">mm</span>
+                </div>
+                <div class="relative">
+                  <input id="dim-y" type="number" value="80" min="1" max="1000" class="w-full text-sm p-2 bg-white border border-[#c4c5d7] rounded font-mono pr-8" placeholder="Y"/>
+                  <span class="absolute right-2 top-2 text-xs text-gray-400 font-mono">mm</span>
+                </div>
+                <div class="relative">
+                  <input id="dim-z" type="number" value="45" min="1" max="1000" class="w-full text-sm p-2 bg-white border border-[#c4c5d7] rounded font-mono pr-8" placeholder="Z"/>
+                  <span class="absolute right-2 top-2 text-xs text-gray-400 font-mono">mm</span>
+                </div>
+              </div>
+              <p class="text-[11px] text-[#747686] mt-1 font-mono">Evaluates 6 spatial rotations against machine build envelopes.</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-[#434655] mb-1">Batch Quantity</label>
+                <input id="batch-qty" type="number" value="2" min="1" max="100" class="w-full text-sm p-2 bg-white border border-[#c4c5d7] rounded font-mono"/>
+              </div>
+              <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-[#434655] mb-1">Required Tolerance</label>
+                <select class="w-full text-sm p-2 bg-white border border-[#c4c5d7] rounded">
+                  <option value="0.2">±0.20 mm (Standard FDM)</option>
+                  <option value="0.05">±0.05 mm (Precision CNC/SLA)</option>
+                </select>
+              </div>
+            </div>
+
+            <button type="submit" class="w-full proto-btn proto-btn-primary py-2.5 mt-2">
+              Run Real-Time Capability Matching
+            </button>
+          </form>
+
+          <!-- Private CAD Upload Specifier -->
+          <div class="mt-6 pt-4 border-t border-[#c4c5d7]">
+            <h3 class="text-xs font-bold uppercase text-[#434655] mb-2 tracking-wider">CAD Drawing / 3D Model Attachment</h3>
+            <div class="border-2 border-dashed border-[#c4c5d7] p-4 rounded text-center bg-[#eff4ff]">
+              <div class="text-xs font-semibold text-blue-900 mb-1">Drag & drop STEP, STL, DXF, or GERBER</div>
+              <div class="text-[11px] text-[#747686]">Stored privately with SHA-256 integrity verification (Max 50MB)</div>
+              <input type="file" id="cad-file-input" class="hidden" accept=".stl,.step,.stp,.dxf,.zip"/>
+              <button onclick="document.getElementById('cad-file-input').click()" class="mt-2 proto-btn proto-btn-secondary text-xs py-1 px-3">
+                Select File
+              </button>
+            </div>
+            <div id="file-meta" class="hidden mt-2 text-xs font-mono bg-white p-2 border border-[#c4c5d7] rounded"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Matching Results Grid -->
+      <div class="lg:col-span-7">
+        <div class="proto-card">
+          <div class="flex justify-between items-center mb-4 pb-2 border-b border-[#c4c5d7]">
+            <h2 class="text-base font-bold flex items-center gap-2">
+              <span>Matching Machines Across Network</span>
+              <span id="match-count-badge" class="proto-badge badge-neutral text-xs">Searching...</span>
+            </h2>
+            <div class="text-xs text-[#747686]">Sorted by Fit Score & Distance</div>
+          </div>
+
+          <div id="matches-container" class="space-y-3">
+            <!-- Populated via /api/match -->
+          </div>
+        </div>
+
+        <!-- Deliberate Phase Placeholder Banner -->
+        <div class="placeholder-box">
+          <div class="tag">SCHEDULING & TARIFF STAGE</div>
+          <div class="text-xs font-bold text-[#0b1c30] mb-1">Instant Booking & Quote Acceptance Workflow</div>
+          <p class="text-xs text-[#434655] max-w-lg mx-auto">
+            Once a machine is matched and CAD is uploaded, formal quotation issuing and collision-free slot booking are executed through the live PostgreSQL state machine.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Jobs Section -->
+    <section id="active-jobs" class="mt-12">
+      <div class="mb-4">
+        <h2 class="text-xl font-bold tracking-tight">My Active Work Orders & Live Tracking</h2>
+        <p class="text-xs text-[#434655]">Real-time production states scoped to your authenticated account</p>
+      </div>
+
+      <div class="proto-card overflow-x-auto">
+        <table class="w-full text-left text-xs">
+          <thead>
+            <tr class="border-b border-[#c4c5d7] text-[#434655] font-mono uppercase tracking-wider">
+              <th class="pb-2">Job ID</th>
+              <th class="pb-2">Title / Description</th>
+              <th class="pb-2">Assigned Facility</th>
+              <th class="pb-2">Machine</th>
+              <th class="pb-2">Production State</th>
+              <th class="pb-2">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="jobs-table-body" class="divide-y divide-[#eff4ff]">
+            <!-- Loaded dynamically from /api/jobs -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="/js/shell.js"></script>
+  <script>
+    async function runMatching() {
+      const x = document.getElementById('dim-x').value;
+      const y = document.getElementById('dim-y').value;
+      const z = document.getElementById('dim-z').value;
+      const process = document.getElementById('match-process').value;
+      const qty = document.getElementById('batch-qty').value;
+
+      try {
+        const res = await fetch('/api/match', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ x_mm: x, y_mm: y, z_mm: z, process, quantity: qty }),
+        });
+        const data = await res.json();
+        document.getElementById('match-count-badge').textContent = `${data.totalMatches} Capable`;
+
+        const container = document.getElementById('matches-container');
+        if (data.matches.length === 0) {
+          container.innerHTML = `<div class="p-6 text-center text-xs text-gray-500">No machines match this bounding envelope (${x}×${y}×${z} mm) or process. Try adjusting dimensions.</div>`;
+          return;
+        }
+
+        container.innerHTML = data.matches.map(m => `
+          <div class="p-3 border border-[#c4c5d7] rounded hover:border-blue-500 bg-white flex justify-between items-center transition">
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="font-bold text-sm text-[#0b1c30]">${m.make} ${m.model}</span>
+                <span class="proto-badge ${m.isBookable ? 'badge-live' : 'badge-amber'}">${m.statusNote}</span>
+              </div>
+              <div class="text-xs text-[#434655] flex gap-4">
+                <span>Facility: <strong>${m.centreName}</strong></span>
+                <span>Process: <strong class="uppercase font-mono">${m.process}</strong></span>
+                <span>Fit Score: <strong class="font-mono text-emerald-700">${m.fitScore}%</strong></span>
+              </div>
+            </div>
+            <div class="text-right">
+              <div class="text-sm font-bold text-blue-900 font-mono">₹${m.estCostINR}</div>
+              <div class="text-[11px] text-[#747686] font-mono">Est: ${m.estHours} hrs run</div>
+              <button class="mt-1 proto-btn proto-btn-secondary text-[11px] py-1 px-2.5">
+                Select Machine
+              </button>
+            </div>
+          </div>
+        `).join('');
+      } catch (e) {
+        console.error('Error running matcher:', e);
+      }
+    }
+
+    async function loadJobs() {
+      try {
+        const res = await fetch('/api/jobs');
+        const data = await res.json();
+        const tbody = document.getElementById('jobs-table-body');
+        tbody.innerHTML = data.jobs.map(j => `
+          <tr class="py-2">
+            <td class="py-2.5 font-mono font-bold text-blue-800">#00${j.id}</td>
+            <td class="py-2.5 font-semibold">${j.title}</td>
+            <td class="py-2.5">${j.centre}</td>
+            <td class="py-2.5 font-mono text-[#434655]">${j.machine}</td>
+            <td class="py-2.5">
+              <span class="proto-badge ${j.status === 'ready' ? 'badge-live' : (j.status === 'running' ? 'badge-amber' : 'badge-neutral')}">
+                ${j.status.toUpperCase()}
+              </span>
+            </td>
+            <td class="py-2.5">
+              <button class="text-blue-700 font-bold hover:underline">Track & Inspect →</button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (e) {
+        console.error('Failed to load jobs:', e);
+      }
+    }
+
+    document.getElementById('matcher-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      runMatching();
+    });
+
+    document.getElementById('cad-file-input').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const meta = document.getElementById('file-meta');
+        meta.classList.remove('hidden');
+        meta.innerHTML = `Attached: <strong>${file.name}</strong> (${Math.round(file.size/1024)} KB) • Ready for DFM submission`;
+      }
+    });
+
+    runMatching();
+    loadJobs();
+  </script>
+</body>
+</html>

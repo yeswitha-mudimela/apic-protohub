@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Manager Console — Centre Operations | APIC ProtoHub</title>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/css/tokens.css"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#f8f9ff] text-[#0b1c30]">
+  <!-- Shell Navigation injected by shell.js -->
+
+  <main class="max-w-7xl mx-auto px-6 py-8">
+    <div class="mb-6 flex justify-between items-end">
+      <div>
+        <div class="text-xs font-mono font-bold text-blue-700 tracking-wider uppercase mb-1">CENTRE OPERATIONS MANAGEMENT</div>
+        <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight">Regional Facility Dispatch & Tariff Engine</h1>
+        <p class="text-sm text-[#434655]">Live manager queue for APIC Visakhapatnam (AU Campus). Price work orders and audit consumables.</p>
+      </div>
+      <div class="text-right">
+        <span class="proto-badge badge-live">CENTRE 001: VISAKHAPATNAM</span>
+        <div class="text-xs text-[#747686] mt-1 font-mono">Manager: K. Prasad</div>
+      </div>
+    </div>
+
+    <!-- KPI Strip -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div class="proto-card border-l-4 border-l-amber-500">
+        <div class="text-xs font-mono uppercase text-[#747686]">Awaiting Quotation</div>
+        <div class="text-2xl font-bold font-mono text-amber-600 mt-1">1 Job</div>
+        <div class="text-[11px] text-[#434655] mt-1">Requires DFM tariff review</div>
+      </div>
+      <div class="proto-card border-l-4 border-l-blue-600">
+        <div class="text-xs font-mono uppercase text-[#747686]">Active Cycles</div>
+        <div class="text-2xl font-bold font-mono text-blue-900 mt-1">3 Runs</div>
+        <div class="text-[11px] text-[#434655] mt-1">Haas CNC & Ultimaker</div>
+      </div>
+      <div class="proto-card border-l-4 border-l-emerald-600">
+        <div class="text-xs font-mono uppercase text-[#747686]">Completed Pickups</div>
+        <div class="text-2xl font-bold font-mono text-emerald-600 mt-1">2 Ready</div>
+        <div class="text-[11px] text-[#434655] mt-1">Awaiting student collection</div>
+      </div>
+      <div class="proto-card border-l-4 border-l-rose-600">
+        <div class="text-xs font-mono uppercase text-[#747686]">Consumables Alert</div>
+        <div class="text-2xl font-bold font-mono text-rose-600 mt-1">1 Low</div>
+        <div class="text-[11px] text-[#434655] mt-1">Aluminium 6061 stock &lt; 2kg</div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <!-- Left: Operations Queue -->
+      <div class="lg:col-span-8">
+        <div class="proto-card">
+          <div class="flex justify-between items-center mb-4 pb-2 border-b border-[#c4c5d7]">
+            <h2 class="text-base font-bold">1. Prioritized Work Order Queue (v_manager_queue)</h2>
+            <span class="text-xs font-mono text-[#747686]">Auto-refreshed</span>
+          </div>
+
+          <div class="space-y-4">
+            <!-- Urgent Quote Item -->
+            <div class="p-4 border border-amber-300 rounded bg-amber-50/50 flex justify-between items-center">
+              <div>
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="proto-badge badge-amber font-mono">ACTION: QUOTE PENDING</span>
+                  <span class="font-bold text-sm">Job #003 — Titanium Bracket Fixture</span>
+                </div>
+                <div class="text-xs text-[#434655] font-mono flex gap-4">
+                  <span>Target: Haas Mini Mill (CNC)</span>
+                  <span>Customer: Ravi Teja (Student)</span>
+                  <span>Volume: 180×120×45 mm</span>
+                </div>
+              </div>
+              <div>
+                <button onclick="document.getElementById('quote-modal').classList.remove('hidden')" class="proto-btn proto-btn-primary text-xs py-1.5 px-3">
+                  Build & Issue Quote →
+                </button>
+              </div>
+            </div>
+
+            <!-- In Production Item -->
+            <div class="p-4 border border-[#c4c5d7] rounded bg-white flex justify-between items-center">
+              <div>
+                <div class="flex items-center gap-2 mb-1">
+                  <span class="proto-badge badge-live font-mono">RUNNING (CYCLE 64%)</span>
+                  <span class="font-bold text-sm">Job #001 — Drone Arm Prototype</span>
+                </div>
+                <div class="text-xs text-[#434655] font-mono flex gap-4">
+                  <span>Target: Ultimaker S5</span>
+                  <span>Material: PLA Black (180g consumed)</span>
+                </div>
+              </div>
+              <div>
+                <button class="proto-btn proto-btn-secondary text-xs py-1.5 px-3" onclick="alert('Viewing machine runtime telemetry...')">
+                  View Run Telemetry
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Deliberate Phase Placeholder Banner -->
+        <div class="placeholder-box">
+          <div class="tag">MANAGER OPERATIONS BRAIN</div>
+          <div class="text-xs font-bold text-[#0b1c30] mb-1">Finite State Machine & Stock Deductions</div>
+          <p class="text-xs text-[#434655] max-w-lg mx-auto">
+            Quotation pricing rules, 50% student discounts, and transactional double-entry inventory deductions are driven by <code>issue_quote()</code> and <code>advance_job()</code> in PostgreSQL.
+          </p>
+        </div>
+      </div>
+
+      <!-- Right: Machine Status & Stock -->
+      <div class="lg:col-span-4 space-y-6">
+        <!-- Machine Status Toggle -->
+        <div class="proto-card">
+          <h2 class="text-sm font-bold mb-3 pb-2 border-b border-[#c4c5d7]">Centre Machines (APIC Visakhapatnam)</h2>
+          <div class="space-y-3 text-xs">
+            <div class="flex justify-between items-center p-2 bg-[#f8f9ff] border border-[#c4c5d7] rounded">
+              <div>
+                <div class="font-bold">Ultimaker S5</div>
+                <div class="text-[#747686] font-mono">VZG-3DP-001 • FDM</div>
+              </div>
+              <span class="proto-badge badge-live">AVAILABLE</span>
+            </div>
+            <div class="flex justify-between items-center p-2 bg-[#f8f9ff] border border-[#c4c5d7] rounded">
+              <div>
+                <div class="font-bold">Formlabs Form 3L</div>
+                <div class="text-[#747686] font-mono">VZG-SLA-001 • SLA</div>
+              </div>
+              <span class="proto-badge badge-live">AVAILABLE</span>
+            </div>
+            <div class="flex justify-between items-center p-2 bg-[#f8f9ff] border border-[#c4c5d7] rounded">
+              <div>
+                <div class="font-bold">Haas Mini Mill</div>
+                <div class="text-[#747686] font-mono">VZG-CNC-001 • CNC</div>
+              </div>
+              <span class="proto-badge badge-live">AVAILABLE</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Consumables Stock Summary -->
+        <div class="proto-card">
+          <div class="flex justify-between items-center mb-3 pb-2 border-b border-[#c4c5d7]">
+            <h2 class="text-sm font-bold">Consumables Ledger</h2>
+            <button class="text-xs text-blue-700 font-bold hover:underline" onclick="alert('Opening stock movement ledger modal...')">+ Restock</button>
+          </div>
+          <div class="space-y-2 text-xs font-mono">
+            <div class="flex justify-between">
+              <span class="text-[#434655]">PLA Filament (Black):</span>
+              <strong class="text-emerald-700">4,200 g</strong>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-[#434655]">Standard Resin Grey:</span>
+              <strong class="text-emerald-700">2,850 g</strong>
+            </div>
+            <div class="flex justify-between p-1 bg-rose-50 border border-rose-200 rounded">
+              <span class="text-rose-800">Aluminium 6061 Stock:</span>
+              <strong class="text-rose-700">1,400 g (LOW)</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Quote Builder Modal -->
+  <div id="quote-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg max-w-lg w-full p-6 shadow-2xl border border-[#c4c5d7]">
+      <div class="flex justify-between items-center pb-3 border-b border-[#c4c5d7] mb-4">
+        <h3 class="font-bold text-base">Issue Tariff / Quotation (Job #003)</h3>
+        <button onclick="document.getElementById('quote-modal').classList.add('hidden')" class="text-gray-400 hover:text-black">✕</button>
+      </div>
+
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-[#434655] mb-1">Estimated Machine Run Time (Hours)</label>
+          <input type="number" value="3.5" class="w-full p-2 border border-[#c4c5d7] rounded font-mono"/>
+        </div>
+        <div>
+          <label class="block font-bold text-[#434655] mb-1">Raw Consumable Mass (Grams)</label>
+          <input type="number" value="450" class="w-full p-2 border border-[#c4c5d7] rounded font-mono"/>
+        </div>
+        <div class="p-3 bg-[#eff4ff] border border-blue-200 rounded font-mono space-y-1">
+          <div class="flex justify-between"><span>Machine Time (₹1,200/hr × 3.5h):</span><span>₹4,200</span></div>
+          <div class="flex justify-between"><span>Material Mass (450g × ₹1.8/g):</span><span>₹810</span></div>
+          <div class="flex justify-between"><span>Setup & Tooling Fee:</span><span>₹500</span></div>
+          <div class="flex justify-between text-emerald-700"><span>Student Subsidy (30% off machine):</span><span>-₹1,260</span></div>
+          <div class="flex justify-between font-bold text-sm text-blue-900 border-t border-blue-300 pt-1 mt-1">
+            <span>Net Payable (INR):</span><span>₹4,250</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 flex justify-end gap-2">
+        <button onclick="document.getElementById('quote-modal').classList.add('hidden')" class="proto-btn proto-btn-secondary text-xs">Cancel</button>
+        <button onclick="alert('Quotation issued via manager.sql issue_quote(). Job moved to quote_sent.'); document.getElementById('quote-modal').classList.add('hidden');" class="proto-btn proto-btn-primary text-xs">
+          Issue Quote v1 to Innovator →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/shell.js"></script>
+</body>
+</html>

@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>APIC ProtoHub Design System Specimen</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface": "#f8f9ff",
+            "error-container": "#ffdad6",
+            "background": "#f8f9ff",
+            "surface-dim": "#cbdbf5",
+            "on-secondary": "#ffffff",
+            "surface-variant": "#d3e4fe",
+            "surface-container": "#e5eeff",
+            "surface-bright": "#f8f9ff",
+            "on-tertiary-fixed": "#00201d",
+            "surface-tint": "#2151da",
+            "on-surface": "#0b1c30",
+            "secondary": "#445e8f",
+            "primary": "#0037b0",
+            "secondary-fixed": "#d7e2ff",
+            "on-primary-fixed": "#001551",
+            "primary-container": "#1d4ed8",
+            "tertiary": "#004e47",
+            "tertiary-fixed": "#89f5e7",
+            "on-secondary-container": "#385282",
+            "on-secondary-fixed-variant": "#2b4675",
+            "on-secondary-fixed": "#001a40",
+            "tertiary-container": "#00685f",
+            "surface-container-high": "#dce9ff",
+            "tertiary-fixed-dim": "#6bd8cb",
+            "error": "#ba1a1a",
+            "on-tertiary-container": "#7be7d9",
+            "inverse-surface": "#213145",
+            "secondary-container": "#adc7fe",
+            "on-error": "#ffffff",
+            "inverse-primary": "#b7c4ff",
+            "on-tertiary": "#ffffff",
+            "on-primary-container": "#cad3ff",
+            "outline-variant": "#c4c5d7",
+            "on-primary": "#ffffff",
+            "surface-container-lowest": "#ffffff",
+            "secondary-fixed-dim": "#adc7fe",
+            "on-primary-fixed-variant": "#0039b5",
+            "on-background": "#0b1c30",
+            "on-tertiary-fixed-variant": "#005049",
+            "surface-container-highest": "#d3e4fe",
+            "on-surface-variant": "#434655",
+            "inverse-on-surface": "#eaf1ff",
+            "primary-fixed-dim": "#b7c4ff",
+            "on-error-container": "#93000a",
+            "surface-container-low": "#eff4ff",
+            "outline": "#747686",
+            "primary-fixed": "#dce1ff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-xs": "0.25rem",
+            "gutter": "1.5rem",
+            "space-sm": "0.5rem",
+            "space-lg": "1.5rem",
+            "gutter-mobile": "0.75rem",
+            "margin": "2rem",
+            "margin-mobile": "1rem",
+            "space-md": "1rem",
+            "space-xl": "2.5rem"
+          },
+          "fontFamily": {
+            "body-sm": ["Inter"],
+            "headline-xl": ["Inter"],
+            "body-md": ["Inter"],
+            "headline-md": ["Inter"],
+            "headline-sm": ["Inter"],
+            "headline-xl-mobile": ["Inter"],
+            "body-lg": ["Inter"],
+            "label-sm": ["Inter"],
+            "code-md": ["Inter"],
+            "label-md": ["Inter"],
+            "headline-lg": ["Inter"],
+            "display-lg": ["Inter"],
+            "display-lg-mobile": ["Inter"]
+          },
+          "fontSize": {
+            "body-sm": ["13px", {"lineHeight": "20px", "fontWeight": "400"}],
+            "headline-xl": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+            "body-md": ["14px", {"lineHeight": "22px", "fontWeight": "400"}],
+            "headline-md": ["22px", {"lineHeight": "30px", "letterSpacing": "-0.005em", "fontWeight": "600"}],
+            "headline-sm": ["18px", {"lineHeight": "26px", "fontWeight": "600"}],
+            "headline-xl-mobile": ["26px", {"lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+            "body-lg": ["16px", {"lineHeight": "26px", "fontWeight": "400"}],
+            "label-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+            "code-md": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+            "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "600"}],
+            "headline-lg": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+            "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+            "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      font-size: 18px;
+      line-height: 1;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .spec-code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface antialiased min-h-screen pb-24">
+<!-- TopAppBar Component (from Shared Components JSON) -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-gutter-mobile h-14 bg-surface-container-lowest dark:bg-inverse-surface border-b border-outline-variant">
+<div class="flex items-center space-x-2">
+<button class="p-1 text-on-surface-variant hover:bg-surface-container transition-colors duration-150 active:scale-95">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<span class="text-headline-sm font-headline-sm text-primary dark:text-inverse-primary tracking-tight">APIC ProtoHub</span>
+</div>
+<div class="flex items-center space-x-2">
+<span class="px-2 py-0.5 bg-surface-container text-primary font-label-sm text-label-sm border border-outline-variant">DS SPEC v1.0.4</span>
+<button class="p-1 text-primary dark:text-inverse-primary hover:bg-surface-container transition-colors duration-150 active:scale-95">
+<span class="material-symbols-outlined" data-icon="sensors">sensors</span>
+</button>
+</div>
+</header>
+<!-- Mobile Screen Container (approx 390px centered) -->
+<main class="max-w-[420px] mx-auto pt-16 px-gutter-mobile space-y-4">
+<!-- Role Banners & Demo Mode Notice -->
+<section class="space-y-2 mt-2">
+<div class="bg-surface-container-high border border-outline-variant p-2.5 flex items-start space-x-2">
+<span class="material-symbols-outlined text-primary mt-0.5" data-icon="info">info</span>
+<div>
+<p class="font-label-md text-label-md text-on-surface font-semibold">Demo Mode Active — Simulated SMS/OTP &amp; Email gateway</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Live hardware validation sandbox active. Transactions write to immutable audit log.</p>
+</div>
+</div>
+<!-- Role Hierarchy Chips -->
+<div class="bg-surface-container-lowest border border-outline-variant p-3 space-y-1.5">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block">Access Role Hierarchy</span>
+<div class="flex flex-wrap gap-1.5">
+<span class="inline-flex items-center px-2 py-1 bg-surface-container-low text-secondary border border-outline-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-xs mr-1" data-icon="school">school</span> Student / Innovator
+          </span>
+<span class="inline-flex items-center px-2 py-1 bg-surface-container text-primary font-semibold border border-primary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-xs mr-1" data-icon="build">build</span> Centre Technician
+          </span>
+<span class="inline-flex items-center px-2 py-1 bg-surface-container-low text-secondary border border-outline-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-xs mr-1" data-icon="manage_accounts">manage_accounts</span> Centre Manager
+          </span>
+<span class="inline-flex items-center px-2 py-1 bg-surface-container-low text-secondary border border-outline-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-xs mr-1" data-icon="admin_panel_settings">admin_panel_settings</span> Network Admin
+          </span>
+</div>
+</div>
+</section>
+<!-- Header Section -->
+<section class="bg-surface-container-lowest border border-outline-variant p-4">
+<div class="flex items-center justify-between pb-2 border-b border-surface-container">
+<span class="font-label-sm text-label-sm text-on-surface-variant tracking-wider uppercase">System Specification Sheet</span>
+<span class="inline-flex items-center px-1.5 py-0.5 bg-surface-container text-tertiary font-label-sm text-label-sm border border-outline-variant">
+<span class="material-symbols-outlined text-xs mr-1" data-icon="verified">verified</span> Validated WCAG AAA
+        </span>
+</div>
+<div class="pt-3">
+<h1 class="font-headline-xl-mobile text-headline-xl-mobile text-on-surface tracking-tight">APIC ProtoHub Design System v1.0.4</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Industrial-grade UI specimen for high-precision manufacturing, telemetry review, and rapid fabrication orchestration.</p>
+</div>
+</section>
+<!-- Brand & Semantic Palette -->
+<section class="bg-surface-container-lowest border border-outline-variant p-4 space-y-3">
+<div class="flex justify-between items-center pb-2 border-b border-surface-container">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">1. Color Tokens &amp; Semantic Gating</h2>
+<span class="font-label-sm text-label-sm text-on-surface-variant spec-code">SYS/CLR-V1</span>
+</div>
+<!-- Core Brand Tokens -->
+<div class="space-y-1.5">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Core Brand Plates</span>
+<div class="grid grid-cols-2 gap-2">
+<div class="p-2.5 bg-primary-container text-on-primary border border-outline-variant">
+<p class="font-label-md text-label-md font-semibold">Engineering Cobalt</p>
+<p class="spec-code text-xs text-on-primary-container">#1D4ED8 / --primary</p>
+</div>
+<div class="p-2.5 bg-inverse-surface text-inverse-on-surface border border-outline-variant">
+<p class="font-label-md text-label-md font-semibold">Deep Navy Slate</p>
+<p class="spec-code text-xs text-outline-variant">#0F172A / --canvas-dark</p>
+</div>
+</div>
+</div>
+<!-- Semantic Status Grid -->
+<div class="space-y-1.5 pt-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Semantic Status Tokens</span>
+<div class="grid grid-cols-1 gap-1.5 text-xs">
+<div class="flex items-center justify-between p-2 bg-surface-container-low border border-outline-variant">
+<div class="flex items-center space-x-2">
+<span class="w-3.5 h-3.5 bg-tertiary-container inline-block border border-outline-variant"></span>
+<span class="font-label-md text-label-md text-on-surface font-semibold">Success / Verified</span>
+</div>
+<span class="spec-code text-on-surface-variant">#15803D · --status-success</span>
+</div>
+<div class="flex items-center justify-between p-2 bg-surface-container-low border border-outline-variant">
+<div class="flex items-center space-x-2">
+<span class="w-3.5 h-3.5 bg-secondary inline-block border border-outline-variant"></span>
+<span class="font-label-md text-label-md text-on-surface font-semibold">Warning / Calibrating</span>
+</div>
+<span class="spec-code text-on-surface-variant">#B45309 · --status-warning</span>
+</div>
+<div class="flex items-center justify-between p-2 bg-surface-container-low border border-outline-variant">
+<div class="flex items-center space-x-2">
+<span class="w-3.5 h-3.5 bg-error inline-block border border-outline-variant"></span>
+<span class="font-label-md text-label-md text-on-surface font-semibold">Danger / Stop</span>
+</div>
+<span class="spec-code text-on-surface-variant">#B91C1C · --status-danger</span>
+</div>
+<div class="flex items-center justify-between p-2 bg-surface-container-low border border-outline-variant">
+<div class="flex items-center space-x-2">
+<span class="w-3.5 h-3.5 bg-primary inline-block border border-outline-variant"></span>
+<span class="font-label-md text-label-md text-on-surface font-semibold">Info / Routing</span>
+</div>
+<span class="spec-code text-on-surface-variant">#0284C7 · --status-info</span>
+</div>
+<div class="flex items-center justify-between p-2 bg-surface-container-low border border-outline-variant">
+<div class="flex items-center space-x-2">
+<span class="w-3.5 h-3.5 bg-outline inline-block border border-outline-variant"></span>
+<span class="font-label-md text-label-md text-on-surface font-semibold">Neutral Slate</span>
+</div>
+<span class="spec-code text-on-surface-variant">#64748B · --status-neutral</span>
+</div>
+</div>
+</div>
+<!-- Dual Coding Policy Note -->
+<div class="p-2 bg-surface-container border border-outline-variant flex items-start space-x-2">
+<span class="material-symbols-outlined text-primary text-base mt-0.5" data-icon="rule">rule</span>
+<p class="font-body-sm text-body-sm text-on-surface">
+<strong class="font-semibold">Dual-Coding Requirement:</strong> Color is never the sole indicator of machine or quote status; it is strictly accompanied by an unambiguous icon + explicit text label.
+        </p>
+</div>
+</section>
+<!-- Typography Scale & Specs Readout -->
+<section class="bg-surface-container-lowest border border-outline-variant p-4 space-y-3">
+<div class="flex justify-between items-center pb-2 border-b border-surface-container">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">2. Typography &amp; Numerical Spec</h2>
+<span class="font-label-sm text-label-sm text-on-surface-variant spec-code">DIN/ISO</span>
+</div>
+<div class="space-y-2 border-b border-surface-container pb-3">
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant block">Display Headline (Mobile 32px / Bold)</span>
+<span class="font-display-lg-mobile text-display-lg-mobile text-on-surface">Rapid Prototyping</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant block">Headline Medium (22px / Semi-bold)</span>
+<span class="font-headline-md text-headline-md text-on-surface">5-Axis Simultaneous Milling</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant block">Body Copy (14px / Regular)</span>
+<p class="font-body-md text-body-md text-on-surface">All parts inspected per ISO 2859-1 single sampling plan for normal inspection, general inspection level II.</p>
+</div>
+</div>
+<!-- Technical Monospace Tolerances -->
+<div class="space-y-1.5">
+<span class="font-label-sm text-label-sm text-on-surface-variant block">Technical Monospace Specimen Matrix</span>
+<div class="grid grid-cols-2 gap-2">
+<div class="p-2 bg-surface-container-low border border-outline-variant">
+<span class="font-label-sm text-label-sm text-on-surface-variant block">TOLERANCE CLASS</span>
+<span class="spec-code text-sm font-semibold text-primary">ISO 2768-m</span>
+</div>
+<div class="p-2 bg-surface-container-low border border-outline-variant">
+<span class="font-label-sm text-label-sm text-on-surface-variant block">PRECISION DEV</span>
+<span class="spec-code text-sm font-semibold text-on-surface">±0.05 mm</span>
+</div>
+<div class="p-2 bg-surface-container-low border border-outline-variant">
+<span class="font-label-sm text-label-sm text-on-surface-variant block">KINEMATICS</span>
+<span class="spec-code text-sm font-semibold text-on-surface">CNC 5-Axis RTCP</span>
+</div>
+<div class="p-2 bg-surface-container-low border border-outline-variant">
+<span class="font-label-sm text-label-sm text-on-surface-variant block">SURFACE FINISH</span>
+<span class="spec-code text-sm font-semibold text-on-surface">Ra 1.6 μm</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Interactive Controls & State Matrix -->
+<section class="bg-surface-container-lowest border border-outline-variant p-4 space-y-3">
+<div class="flex justify-between items-center pb-2 border-b border-surface-container">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">3. Controls &amp; State Matrix</h2>
+<span class="font-label-sm text-label-sm text-on-surface-variant spec-code">STATE-VAR</span>
+</div>
+<!-- Buttons Grid -->
+<div class="space-y-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant block">Industrial Action Triggers</span>
+<div class="grid grid-cols-2 gap-2">
+<!-- Primary Cobalt -->
+<button class="h-9 px-3 bg-primary-container text-on-primary font-label-md text-label-md border border-primary-container flex items-center justify-center space-x-1 hover:bg-primary transition-colors active:scale-95">
+<span class="material-symbols-outlined text-sm" data-icon="send">send</span>
+<span>Submit Job</span>
+</button>
+<!-- Secondary Outline -->
+<button class="h-9 px-3 bg-surface-container-lowest text-on-surface font-label-md text-label-md border border-outline-variant flex items-center justify-center space-x-1 hover:bg-surface-container transition-colors active:scale-95">
+<span class="material-symbols-outlined text-sm" data-icon="download">download</span>
+<span>Export DFM</span>
+</button>
+<!-- Destructive Hazard -->
+<button class="h-9 px-3 bg-error text-on-error font-label-md text-label-md border border-error flex items-center justify-center space-x-1 active:scale-95">
+<span class="material-symbols-outlined text-sm" data-icon="emergency_home">emergency_home</span>
+<span>Abort Run</span>
+</button>
+<!-- Disabled Button -->
+<button class="h-9 px-3 bg-surface-container-high text-outline font-label-md text-label-md border border-outline-variant flex items-center justify-center space-x-1 cursor-not-allowed opacity-60" disabled="">
+<span class="material-symbols-outlined text-sm" data-icon="lock">lock</span>
+<span>Locked</span>
+</button>
+</div>
+<!-- Full width loading and ghost buttons -->
+<div class="space-y-2 pt-1">
+<button class="w-full h-9 px-3 bg-primary-container text-on-primary font-label-md text-label-md border border-primary flex items-center justify-center space-x-2">
+<span class="material-symbols-outlined animate-spin text-sm" data-icon="progress_activity">progress_activity</span>
+<span>Slicing Toolpath (Layer 420/850)...</span>
+</button>
+<button class="w-full h-8 px-3 text-secondary font-label-md text-label-md hover:bg-surface-container flex items-center justify-center space-x-1">
+<span class="material-symbols-outlined text-sm" data-icon="history">history</span>
+<span>View Machine Calibration Audit</span>
+</button>
+</div>
+</div>
+<!-- Text Inputs & Numerical Unit Attachments -->
+<div class="space-y-3 pt-2 border-t border-surface-container">
+<span class="font-label-sm text-label-sm text-on-surface-variant block">Input Fields &amp; Attached Units</span>
+<!-- Standard Input -->
+<div class="space-y-1">
+<label class="font-label-sm text-label-sm text-on-surface">Material Grade Specifier</label>
+<input class="w-full h-9 px-3 bg-surface-container-lowest border border-outline-variant text-on-surface font-body-sm text-body-sm focus:border-primary-container focus:ring-1 focus:ring-primary-container outline-none" readonly="" type="text" value="Aluminium 6061-T6 (Aerospace Spec)"/>
+</div>
+<!-- Focused with 2px blue ring -->
+<div class="space-y-1">
+<label class="font-label-sm text-label-sm text-primary font-semibold">Active Parameter (Focused Simulation)</label>
+<input class="w-full h-9 px-3 bg-surface-container-lowest border border-primary-container ring-2 ring-primary-container/20 text-on-surface font-body-sm text-body-sm outline-none" readonly="" type="text" value="Laser Power: 400W [Continuous Wave]"/>
+</div>
+<!-- Error State with Microcopy -->
+<div class="space-y-1">
+<label class="font-label-sm text-label-sm text-error font-semibold flex items-center justify-between">
+<span>Primary CAD Upload</span>
+<span class="text-xs uppercase font-label-sm">Format Error</span>
+</label>
+<div class="relative">
+<input class="w-full h-9 pl-3 pr-8 bg-surface-container-lowest border border-error text-error font-body-sm text-body-sm outline-none" readonly="" type="text" value="chassis_mount_v2.dwg"/>
+<span class="material-symbols-outlined text-error absolute right-2.5 top-2" data-icon="error">error</span>
+</div>
+<p class="font-body-sm text-body-sm text-error">CAD file must be .step, .stl, or .iges &lt; 50MB</p>
+</div>
+<!-- Unit Attached Input (e.g., [ 250 ] mm) -->
+<div class="space-y-1">
+<label class="font-label-sm text-label-sm text-on-surface">Target Chamber Dimension (Z-Axis)</label>
+<div class="flex border border-outline-variant bg-surface-container-lowest">
+<input class="w-full h-9 px-3 text-on-surface font-body-sm text-body-sm spec-code border-0 focus:ring-0 outline-none" readonly="" type="text" value="250"/>
+<div class="h-9 px-3 bg-surface-container border-l border-outline-variant flex items-center text-on-surface-variant font-label-sm text-label-sm spec-code">
+              mm
+            </div>
+</div>
+</div>
+</div>
+</section>
+<!-- Semantic Status & Machine State Chips -->
+<section class="bg-surface-container-lowest border border-outline-variant p-4 space-y-3">
+<div class="flex justify-between items-center pb-2 border-b border-surface-container">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">4. Machine State Indicators</h2>
+<span class="font-label-sm text-label-sm text-on-surface-variant spec-code">TELEMETRY</span>
+</div>
+<div class="grid grid-cols-2 gap-2">
+<!-- Operational -->
+<div class="p-2 border border-outline-variant bg-surface-container-low flex items-center space-x-2">
+<span class="w-2.5 h-2.5 rounded-full bg-tertiary-container ring-2 ring-tertiary-container/30"></span>
+<div>
+<span class="font-label-md text-label-md text-tertiary font-semibold block">Operational</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Online · Ready</span>
+</div>
+</div>
+<!-- Under Maintenance -->
+<div class="p-2 border border-outline-variant bg-surface-container-low flex items-center space-x-2">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary ring-2 ring-secondary/30"></span>
+<div>
+<span class="font-label-md text-label-md text-secondary font-semibold block">Maintenance</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Calibrating Bed</span>
+</div>
+</div>
+<!-- Decommissioned / Busy -->
+<div class="p-2 border border-outline-variant bg-surface-container-low flex items-center space-x-2">
+<span class="w-2.5 h-2.5 rounded-full bg-outline ring-2 ring-outline/30"></span>
+<div>
+<span class="font-label-md text-label-md text-on-surface-variant font-semibold block">Decommissioned</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Slot Reserved</span>
+</div>
+</div>
+<!-- QC Rework Required -->
+<div class="p-2 border border-outline-variant bg-surface-container-low flex items-center space-x-2">
+<span class="w-2.5 h-2.5 rounded-full bg-error ring-2 ring-error/30"></span>
+<div>
+<span class="font-label-md text-label-md text-error font-semibold block">QC Rework</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Dev &gt; 0.08mm</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Technical Cards & Stepper Specimen -->
+<section class="bg-surface-container-lowest border border-outline-variant p-4 space-y-3">
+<div class="flex justify-between items-center pb-2 border-b border-surface-container">
+<h2 class="font-headline-sm text-headline-sm text-on-surface">5. Equipment Card &amp; Stepper</h2>
+<span class="font-label-sm text-label-sm text-on-surface-variant spec-code">CARD/MCH-01</span>
+</div>
+<!-- Machine Quick Spec Card -->
+<div class="border border-outline-variant bg-surface-container-lowest p-3 space-y-2">
+<div class="flex items-start justify-between">
+<div>
+<span class="font-label-sm text-label-sm text-primary uppercase font-semibold">APIC Vizag Hub #03</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">EOS M 290 DMLS</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Direct Metal Laser Sintering 3D System</p>
+</div>
+<span class="px-2 py-0.5 bg-surface-container text-tertiary border border-outline-variant font-label-sm text-label-sm flex items-center">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary-container mr-1"></span>
+            Operational
+          </span>
+</div>
+<div class="grid grid-cols-2 gap-2 pt-2 border-t border-surface-container spec-code text-xs">
+<div class="bg-surface-container-low p-2 border border-outline-variant">
+<span class="text-on-surface-variant block font-label-sm">ENVELOPE (XYZ)</span>
+<span class="font-semibold text-on-surface">250×250×325 mm</span>
+</div>
+<div class="bg-surface-container-low p-2 border border-outline-variant">
+<span class="text-on-surface-variant block font-label-sm">LASER SPOT TOL</span>
+<span class="font-semibold text-primary">±0.05 mm</span>
+</div>
+<div class="bg-surface-container-low p-2 border border-outline-variant">
+<span class="text-on-surface-variant block font-label-sm">LAYER THICKNESS</span>
+<span class="font-semibold text-on-surface">20 - 100 μm</span>
+</div>
+<div class="bg-surface-container-low p-2 border border-outline-variant">
+<span class="text-on-surface-variant block font-label-sm">INERT GAS</span>
+<span class="font-semibold text-on-surface">Argon 99.99%</span>
+</div>
+</div>
+<button class="w-full h-8 bg-surface-container text-primary font-label-md text-label-md border border-outline-variant flex items-center justify-center space-x-1 mt-2 hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="calendar_month">calendar_month</span>
+<span>Schedule Machine Window</span>
+</button>
+</div>
+<!-- Linear Stepper Component Specimen -->
+<div class="border border-outline-variant p-3 space-y-2.5 bg-surface-container-lowest">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block">Job Pipeline Stepper</span>
+<div class="space-y-3">
+<!-- Step 1 Completed -->
+<div class="flex items-start space-x-3">
+<div class="w-6 h-6 rounded-full bg-primary-container text-on-primary flex items-center justify-center text-xs font-semibold shrink-0">
+<span class="material-symbols-outlined text-sm" data-icon="check">check</span>
+</div>
+<div class="flex-1 pb-2 border-b border-surface-container">
+<p class="font-label-md text-label-md font-semibold text-on-surface">Step 1: CAD &amp; DFM Auto-Validation</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Passed manifold check · Wall thickness &gt; 1.2mm</p>
+</div>
+</div>
+<!-- Step 2 Active -->
+<div class="flex items-start space-x-3">
+<div class="w-6 h-6 rounded-full border-2 border-primary-container bg-surface text-primary flex items-center justify-center text-xs font-semibold shrink-0">
+              2
+            </div>
+<div class="flex-1 pb-2 border-b border-surface-container">
+<div class="flex items-center justify-between">
+<p class="font-label-md text-label-md font-semibold text-primary">Step 2: Technician Bed Assignment</p>
+<span class="font-label-sm text-label-sm bg-surface-container px-1 text-primary">ACTIVE</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Allocated to Vizag Centre #03 EOS M 290 plate</p>
+</div>
+</div>
+<!-- Step 3 Locked -->
+<div class="flex items-start space-x-3 opacity-60">
+<div class="w-6 h-6 rounded-full bg-surface-container text-outline flex items-center justify-center text-xs font-semibold shrink-0">
+<span class="material-symbols-outlined text-sm" data-icon="lock">lock</span>
+</div>
+<div class="flex-1">
+<p class="font-label-md text-label-md font-semibold text-on-surface">Step 3: Laser Sintering &amp; Post-Annealing</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Awaiting prior step completion</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar Component (from Shared Components JSON) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-gutter-mobile py-2 bg-surface-container-lowest dark:bg-inverse-surface border-t border-outline-variant">
+<!-- Active Tab: Centres (Semantic closest to design system / infrastructure explorer) -->
+<a class="flex flex-col items-center justify-center text-primary dark:text-inverse-primary font-semibold py-1 hover:bg-surface-container-low transition-colors duration-150 active:scale-95" href="#centres">
+<span class="material-symbols-outlined" data-icon="precision_manufacturing">precision_manufacturing</span>
+<span class="text-label-sm font-label-sm">Centres</span>
+</a>
+<!-- Submit Job -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant py-1 hover:bg-surface-container-low transition-colors duration-150 active:scale-95" href="#submit">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+<span class="text-label-sm font-label-sm">Submit Job</span>
+</a>
+<!-- Telemetry -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant py-1 hover:bg-surface-container-low transition-colors duration-150 active:scale-95" href="#telemetry">
+<span class="material-symbols-outlined" data-icon="monitoring">monitoring</span>
+<span class="text-label-sm font-label-sm">Telemetry</span>
+</a>
+<!-- Profile -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant py-1 hover:bg-surface-container-low transition-colors duration-150 active:scale-95" href="#profile">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+<span class="text-label-sm font-label-sm">Profile</span>
+</a>
+</nav>
+</body></html>

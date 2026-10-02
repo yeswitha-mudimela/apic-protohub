@@ -1,0 +1,175 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="40 88 1320 812" width="1320" height="812">
+<defs>
+  <style>
+    .t{font-family:'DejaVu Sans',Arial,sans-serif}
+    .mono{font-family:'DejaVu Sans Mono','Courier New',monospace}
+    .lyr{font-size:12px;letter-spacing:1.6px;fill:#8a94a3;text-transform:uppercase}
+    .h{font-size:15px;font-weight:bold;fill:#16191d}
+    .s{font-size:11.5px;fill:#5a626e}
+    .tiny{font-size:10px;fill:#8a94a3}
+    .wht{fill:#ffffff}
+  </style>
+  <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+    <path d="M0,0 L10,5 L0,10 z" fill="#5a626e"/>
+  </marker>
+  <marker id="arY" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+    <path d="M0,0 L10,5 L0,10 z" fill="#f5c518"/>
+  </marker>
+</defs>
+
+<rect width="1400" height="940" fill="#fbfcfd"/>
+
+<!-- ============ TITLE ============ -->
+<text x="50" y="46" class="t" style="font-size:22px;font-weight:bold;fill:#16191d">APIC ProtoHub — Solution Architecture</text>
+<text x="50" y="68" class="t s">Capability-first prototyping network for Andhra Pradesh · AYU SYSTEMS</text>
+<line x1="50" y1="82" x2="1350" y2="82" stroke="#16191d" stroke-width="2"/>
+
+<!-- ============ LAYER 1: USERS ============ -->
+<text x="50" y="112" class="t lyr">01 · ACCESS</text>
+<g>
+  <rect x="50" y="124" width="295" height="76" fill="#ffffff" stroke="#d3d8de"/>
+  <rect x="50" y="124" width="4" height="76" fill="#f5c518"/>
+  <text x="70" y="150" class="t h">Innovators</text>
+  <text x="70" y="169" class="t s">Students · Startups · Industry</text>
+  <text x="70" y="186" class="t tiny mono">PHONE + OTP</text>
+
+  <rect x="385" y="124" width="295" height="76" fill="#ffffff" stroke="#d3d8de"/>
+  <rect x="385" y="124" width="4" height="76" fill="#1c7c6c"/>
+  <text x="405" y="150" class="t h">Centre Staff &amp; Managers</text>
+  <text x="405" y="169" class="t s">Queue · Quotes · Inventory</text>
+  <text x="405" y="186" class="t tiny mono">INSTITUTIONAL SSO</text>
+
+  <rect x="720" y="124" width="295" height="76" fill="#ffffff" stroke="#d3d8de"/>
+  <rect x="720" y="124" width="4" height="76" fill="#c1440e"/>
+  <text x="740" y="150" class="t h">APIS Administration</text>
+  <text x="740" y="169" class="t s">Utilization across all centres</text>
+  <text x="740" y="186" class="t tiny mono">ROLE-SCOPED</text>
+
+  <rect x="1055" y="124" width="295" height="76" fill="#ffffff" stroke="#d3d8de"/>
+  <rect x="1055" y="124" width="4" height="76" fill="#5a626e"/>
+  <text x="1075" y="150" class="t h">Partner Systems</text>
+  <text x="1075" y="169" class="t s">College ERP · Industry portals</text>
+  <text x="1075" y="186" class="t tiny mono">OPENAPI 3.0</text>
+</g>
+
+<line x1="700" y1="200" x2="700" y2="232" stroke="#5a626e" stroke-width="1.5" marker-end="url(#ar)"/>
+
+<!-- ============ LAYER 2: CLIENT ============ -->
+<text x="50" y="256" class="t lyr">02 · CLIENT</text>
+<rect x="50" y="268" width="1300" height="70" fill="#ffffff" stroke="#d3d8de"/>
+<text x="70" y="294" class="t h">Next.js 14 · React · TypeScript · Tailwind</text>
+<text x="70" y="313" class="t s">Responsive web (primary) · PWA installable on Android &amp; iOS · Telugu + English</text>
+<text x="70" y="330" class="t tiny mono">RESPONSIVE WEB · PWA · i18n</text>
+<rect x="1080" y="284" width="250" height="38" fill="#f4f6f8" stroke="#d3d8de"/>
+<text x="1205" y="301" class="t tiny mono" text-anchor="middle" style="fill:#5a626e">SERVER COMPONENTS</text>
+<text x="1205" y="315" class="t tiny mono" text-anchor="middle" style="fill:#5a626e">STREAMED SEARCH RESULTS</text>
+
+<line x1="700" y1="338" x2="700" y2="370" stroke="#5a626e" stroke-width="1.5" marker-end="url(#ar)"/>
+
+<!-- ============ LAYER 3: API / SECURITY ============ -->
+<text x="50" y="394" class="t lyr">03 · API &amp; SECURITY</text>
+<rect x="50" y="406" width="1300" height="62" fill="#2b3038"/>
+<text x="70" y="432" class="t h wht">REST API · Fastify + Node.js · OpenAPI 3.0 · JWT sessions</text>
+<text x="70" y="452" class="t s" style="fill:#9aa3b0">TLS 1.3 · RBAC (innovator / staff / manager / admin) · Postgres row-level security · rate limiting · signed URLs for CAD files</text>
+
+<line x1="700" y1="468" x2="700" y2="500" stroke="#5a626e" stroke-width="1.5" marker-end="url(#ar)"/>
+
+<!-- ============ LAYER 4: SERVICES ============ -->
+<text x="50" y="524" class="t lyr">04 · CORE SERVICES</text>
+
+<!-- FIT engine — the signature block -->
+<rect x="50" y="536" width="330" height="180" fill="#16191d"/>
+<rect x="50" y="536" width="330" height="5" fill="#f5c518"/>
+<text x="70" y="568" class="t" style="font-size:16px;font-weight:bold;fill:#f5c518">FIT — Capability Engine</text>
+<text x="70" y="590" class="t s" style="fill:#e4e7eb">Answers: which machine can make my part?</text>
+<line x1="70" y1="602" x2="360" y2="602" stroke="#5a626e"/>
+<text x="70" y="622" class="t tiny mono" style="fill:#9aa3b0">▸ ROTATION-AWARE BUILD ENVELOPE</text>
+<text x="70" y="641" class="t tiny mono" style="fill:#9aa3b0">▸ ACHIEVABLE TOLERANCE FILTER</text>
+<text x="70" y="660" class="t tiny mono" style="fill:#9aa3b0">▸ MIN-FEATURE RESOLUTION</text>
+<text x="70" y="679" class="t tiny mono" style="fill:#9aa3b0">▸ LIVE MATERIAL STOCK</text>
+<text x="70" y="702" class="t tiny mono" style="fill:#f5c518">RANK: AVAILABLE → DISTANCE → FIT</text>
+
+<rect x="405" y="536" width="215" height="180" fill="#ffffff" stroke="#d3d8de"/>
+<text x="425" y="566" class="t h">Scheduling</text>
+<text x="425" y="588" class="t s">Slot calendar from centre</text>
+<text x="425" y="604" class="t s">hours &amp; live bookings</text>
+<line x1="425" y1="618" x2="600" y2="618" stroke="#e4e7eb"/>
+<text x="425" y="640" class="t tiny mono" style="fill:#1c7c6c">EXCLUDE USING gist</text>
+<text x="425" y="658" class="t s">Double-booking rejected</text>
+<text x="425" y="674" class="t s">at database level —</text>
+<text x="425" y="690" class="t s">not in app code.</text>
+<text x="425" y="708" class="t tiny">No partial slots past close.</text>
+
+<rect x="645" y="536" width="215" height="180" fill="#ffffff" stroke="#d3d8de"/>
+<text x="665" y="566" class="t h">Quoting</text>
+<text x="665" y="588" class="t s">Versioned, line-itemised:</text>
+<text x="665" y="604" class="t s">time · material · setup</text>
+<line x1="665" y1="618" x2="840" y2="618" stroke="#e4e7eb"/>
+<text x="665" y="640" class="t tiny mono" style="fill:#c1440e">source: auto | manual</text>
+<text x="665" y="658" class="t s">Staff-priced today.</text>
+<text x="665" y="674" class="t s">Every manual quote</text>
+<text x="665" y="690" class="t s">trains the engine.</text>
+<text x="665" y="708" class="t tiny">Automates with use.</text>
+
+<rect x="885" y="536" width="215" height="180" fill="#ffffff" stroke="#d3d8de"/>
+<text x="905" y="566" class="t h">Job Lifecycle</text>
+<text x="905" y="588" class="t s">Explicit state machine</text>
+<line x1="905" y1="602" x2="1080" y2="602" stroke="#e4e7eb"/>
+<text x="905" y="622" class="t tiny mono" style="fill:#5a626e">QUEUED → SETUP</text>
+<text x="905" y="640" class="t tiny mono" style="fill:#5a626e">→ RUNNING → QC</text>
+<text x="905" y="658" class="t tiny mono" style="fill:#5a626e">→ READY → COLLECTED</text>
+<text x="905" y="682" class="t s">Append-only event log,</text>
+<text x="905" y="698" class="t s">actor + timestamp.</text>
+<text x="905" y="714" class="t tiny">Users watch. Staff move.</text>
+
+<rect x="1125" y="536" width="225" height="180" fill="#ffffff" stroke="#d3d8de"/>
+<text x="1145" y="566" class="t h">Inventory &amp; Ops</text>
+<text x="1145" y="588" class="t s">Per-machine stock with</text>
+<text x="1145" y="604" class="t s">reorder thresholds</text>
+<line x1="1145" y1="618" x2="1330" y2="618" stroke="#e4e7eb"/>
+<text x="1145" y="640" class="t tiny mono" style="fill:#c1440e">v_material_alerts</text>
+<text x="1145" y="658" class="t s">Flags low filament</text>
+<text x="1145" y="674" class="t s">before a job fails.</text>
+<text x="1145" y="698" class="t s">Maintenance booked</text>
+<text x="1145" y="714" class="t s">like any job — logged.</text>
+
+<line x1="700" y1="716" x2="700" y2="748" stroke="#5a626e" stroke-width="1.5" marker-end="url(#ar)"/>
+
+<!-- ============ LAYER 5: DATA ============ -->
+<text x="50" y="772" class="t lyr">05 · DATA</text>
+
+<rect x="50" y="784" width="430" height="112" fill="#ffffff" stroke="#16191d" stroke-width="1.5"/>
+<text x="70" y="812" class="t h">PostgreSQL 16</text>
+<text x="70" y="832" class="t s">centre · machine · machine_capability · material</text>
+<text x="70" y="849" class="t s">booking (tstzrange) · job · quote · job_event</text>
+<text x="70" y="872" class="t tiny mono" style="fill:#1c7c6c">CHOSEN FOR tstzrange + EXCLUDE USING gist</text>
+<text x="70" y="887" class="t tiny">Read replicas · row-level security</text>
+
+<rect x="510" y="784" width="205" height="112" fill="#ffffff" stroke="#d3d8de"/>
+<text x="530" y="812" class="t h">Redis</text>
+<text x="530" y="833" class="t s">Slot-hold cache</text>
+<text x="530" y="850" class="t s">Session store</text>
+<text x="530" y="874" class="t tiny mono" style="fill:#8a94a3">CONTENTION RELIEF</text>
+
+<rect x="745" y="784" width="205" height="112" fill="#ffffff" stroke="#d3d8de"/>
+<text x="765" y="812" class="t h">S3 (ap-south-1)</text>
+<text x="765" y="833" class="t s">CAD · Gerber · drawings</text>
+<text x="765" y="850" class="t s">Signed URLs only</text>
+<text x="765" y="874" class="t tiny mono" style="fill:#8a94a3">IP-SENSITIVE FILES</text>
+
+<rect x="980" y="784" width="370" height="112" fill="#f4f6f8" stroke="#d3d8de"/>
+<text x="1000" y="812" class="t h">Analytics — from the same log</text>
+<text x="1000" y="833" class="t s">v_machine_utilization · v_material_alerts</text>
+<text x="1000" y="850" class="t s">Booked hours / machine / week · no-show rates</text>
+<text x="1000" y="874" class="t tiny mono" style="fill:#c1440e">TRACKING DATA *IS* UTILIZATION DATA</text>
+
+<!-- side callout: infra -->
+<rect x="1055" y="220" width="295" height="0" fill="none"/>
+
+
+
+<!-- footer -->
+<line x1="50" y1="915" x2="1350" y2="915" stroke="#e4e7eb"/>
+<text x="50" y="932" class="t tiny mono">DEPLOY: DOCKER · ECS/EKS · AWS ap-south-1 (MUMBAI) — DATA RESIDENCY IN INDIA · CLOUDFRONT CDN · MSG91 SMS</text>
+<text x="1350" y="932" class="t tiny mono" text-anchor="end">AYU SYSTEMS</text>
+</svg>
