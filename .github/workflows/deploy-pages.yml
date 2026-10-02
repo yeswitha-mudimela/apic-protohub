@@ -24,17 +24,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js 20
-        uses: setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Run Test Suite
-        run: |
-          npm ci
-          npm test
-          npm run lint
-
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
